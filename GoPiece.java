@@ -12,7 +12,7 @@ import javafx.scene.transform.Translate;
 //class definition for a reversi piece
 class GoPiece extends Group {
 	// private fields
-	private int playercopy;		// the player that this piece belongs to
+	private int playerCopy;		// the player that this piece belongs to
 	private Ellipse piece;	// ellipse representing the player's piece
 	private Translate t;	// translation for the player piece
 	private DropShadow ds = new DropShadow(5.0, 3.0, 3.0, Color.web("#111111")); //shadow for pieces
@@ -20,15 +20,15 @@ class GoPiece extends Group {
 	
 	// default constructor for the class
 	public GoPiece(int player) {
-		playercopy = player; 
+		playerCopy = player; 
 		piece = new Ellipse(); t = new Translate();
 		piece.getTransforms().add(t);
 		piece.setEffect(ds); //add shadow
 		
-		if(playercopy == 1) {
+		if(playerCopy == 1) {
 			piece.setFill(Color.WHITE);
 		}
-		else if (playercopy == 2) {
+		else if (playerCopy == 2) {
 			piece.setFill(Color.BLACK);
 		}
 		else {
@@ -55,13 +55,13 @@ class GoPiece extends Group {
 	// public method that will swap the colour and type of this piece
 	//change a white piece to a black piece and vice versa
 	public void swapPiece() { 
-		if(playercopy == 1) {
-			playercopy = 2; //change value of player
-			setPiece(playercopy); //switch piece
+		if(playerCopy == 1) {
+			playerCopy = 2; //change value of player
+			setPiece(playerCopy); //switch piece
 		}
-		else if(playercopy == 2) {
-			playercopy=1;
-			setPiece(playercopy);
+		else if(playerCopy == 2) {
+			playerCopy=1;
+			setPiece(playerCopy);
 		}	
 	}
 	
@@ -69,6 +69,7 @@ class GoPiece extends Group {
 	// Change the colour of a piece depending on the value passed in. If the type is zero the
 	// piece should be invisible otherwise it should be set to be visible.
 	public void setPiece(final int type) {
+		playerCopy = type;
 		if (type == 1) {
 			piece.setFill(Color.WHITE); //visible - Player1
 		}
@@ -85,7 +86,7 @@ class GoPiece extends Group {
 	
 	// returns the type of this piece
 	public int getPiece() {
-		return playercopy;
+		return playerCopy;
 	}
 	
 	// allows printing of pieces for debugging purposes
