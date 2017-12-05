@@ -219,4 +219,3 @@ public class GoBoard extends Pane{
 		//System.out.println("Change: " + change); //test
 	}
 }
-
