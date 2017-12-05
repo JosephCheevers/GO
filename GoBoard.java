@@ -13,7 +13,7 @@ import javafx.scene.transform.Translate;
 public class GoBoard extends Pane{
 	
 	// rectangle that makes the background of the board
-	private Rectangle background;
+	public static Rectangle background;
 	// arrays for the lines that makeup the horizontal and vertical grid lines
 	private Line[] horizontal;
 	private Line[] vertical;
@@ -24,12 +24,11 @@ public class GoBoard extends Pane{
 	// the width and height of a cell in the board
 	public double cell_width;
 	public double cell_height;
-	
-	//double getCell_Width() {return cell_width;}
-	//double getCell_Height() {return cell_height;}
 
 	//Label for displaying winners
 	Label winnerLabel = new Label();
+	
+	static int change = 0; // int for background changes
 	
 	public GoBoard() {
 		super();
@@ -140,6 +139,32 @@ public class GoBoard extends Pane{
 			vertical[i].setEndY(height - cell_height/2);
 			vertical_t[i].setX(cell_width*(i+0.5));
 		}	
+	}
+	
+	static void changeBackground() { //method to change background of board
+		//change background (3 options)
+		if(change>1) change =0;
+		else {
+			change++;
+		}
+		
+		if(change == 0) {
+			//background.setStyle("-fx-background-image: url(\"board1.jpg\");-fx-background-repeat: no-repeat;-fx-background-size: contain;");
+			Image image = new Image("board1.jpg");
+			ImagePattern imagePattern = new ImagePattern(image);
+			background.setFill(imagePattern);
+		}
+		else if(change == 1) {
+			Image image = new Image("board2.jpg");
+			ImagePattern imagePattern = new ImagePattern(image);
+			background.setFill(imagePattern);
+		}
+		else {
+			Image image = new Image("board3.jpg");
+			ImagePattern imagePattern = new ImagePattern(image);
+			background.setFill(imagePattern);
+		}
+		//System.out.println("Change: " + change); //test
 	}
 }
 
