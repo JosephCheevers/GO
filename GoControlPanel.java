@@ -7,6 +7,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.NumberStringConverter;
 
+HELLO JOE
+
 public class GoControlPanel extends Pane{
 
 	private GoGameLogic goGameLogic;
