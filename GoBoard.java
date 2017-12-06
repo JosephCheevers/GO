@@ -27,6 +27,7 @@ public class GoBoard extends Pane{
 
 	private GoPiece[][] render;
 
+
 	//Label for displaying winners
 	Label winnerLabel = new Label();
 	

@@ -36,5 +36,6 @@ public class GoControlPanel extends Pane{
 		this.vb = new VBox();
 		this.getChildren().add(vb);
 		vb.getChildren().addAll (gp, new Label("Control Panel"),tf_Player, tf_score, reset_button, change_board_button);
+
 	}	
 }
