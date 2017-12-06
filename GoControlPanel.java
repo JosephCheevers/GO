@@ -23,6 +23,8 @@ public class GoControlPanel extends Pane{
 		Button reset_button = new Button("Reset Game");
 		Button change_board_button = new Button("Change Board");
 		
+		GoPiece gp = new GoPiece(1);
+		
 		change_board_button.setOnAction(event -> {
 	            //root.setEffect(null);
 	            GoBoard.changeBackground();
@@ -33,6 +35,7 @@ public class GoControlPanel extends Pane{
 		this.tf_score.textProperty().bindBidirectional(this.goGameLogic.getScore(), new NumberStringConverter());
 		this.vb = new VBox();
 		this.getChildren().add(vb);
-		vb.getChildren().addAll (new Label("Control Panel"),tf_Player, tf_score, reset_button, change_board_button);
+		vb.getChildren().addAll (gp, new Label("Control Panel"),tf_Player, tf_score, reset_button, change_board_button);
+
 	}	
 }

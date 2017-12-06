@@ -25,6 +25,9 @@ public class GoBoard extends Pane{
 	public double cell_width;
 	public double cell_height;
 
+	private GoPiece[][] render;
+
+
 	//Label for displaying winners
 	Label winnerLabel = new Label();
 	
@@ -34,6 +37,7 @@ public class GoBoard extends Pane{
 		super();
 		this.getChildren().add(new Label("The Board"));	
 	
+			
 		// allocate memory for arrays
 		//variable for board size
 		int boardsize = 7;
@@ -43,10 +47,13 @@ public class GoBoard extends Pane{
 		horizontal_t = new Translate[boardsize];
 		vertical_t = new Translate[boardsize];
 		
+		render = new GoPiece[7][7];
 		
+
 		
 		// call methods for initialising lines & background, render and resetting game
 		this.initialiseLinesBackground();
+		initialiseRender();
 		//this.initialiseRender();
 		//this.resetGame();
 		//this.canMove();
@@ -78,8 +85,7 @@ public class GoBoard extends Pane{
 		this.verticalResizeRelocate(height);
 		
 		//resize and relocate pieces
-		//pieceResizeRelocate();
-		
+		pieceResizeRelocate();
 	}
 		
 
@@ -141,6 +147,53 @@ public class GoBoard extends Pane{
 		}	
 	}
 	
+	public void placePiece(final int x, final int y) {
+		// Step 28
+		System.out.println(x + "," + y);
+		
+		render[x][y].setPiece(1);// = new GoPiece(1);
+		System.out.println("Board");
+		System.out.println(render[x][y]);
+		
+		//getChildren().add(render[x][y]);
+			
+	}
+	
+	private void initialiseRender() {
+		//create render objects in render array and construct with value of 0 for empty space
+		// 8x8 2d array of pieces
+		for(int i=0; i<render.length; i++) {
+	        for(int j=0; j<render[i].length; j++) {
+	            render[i][j] = new GoPiece(0);
+	            getChildren().add(render[i][j]);
+	        }
+	    }
+	}
+	
+	// private method that will reset the renders
+	private void resetRenders() {
+		//call setPiece() method of each render object with a value of 0
+		for(int i=0; i<render.length; i++) {
+	        for(int j=0; j<render[i].length; j++) {
+	            //render[i][j].setPiece(0); // doesn't change actual value of piece
+	        	getChildren().remove(render[i][j]); //remove previous piece
+	            render[i][j] = new GoPiece(0); // reset to 0
+	            getChildren().add(render[i][j]);
+	        }
+	    }
+	}
+	
+	// private method for resizing and relocating all the pieces
+	private void pieceResizeRelocate() {
+		for(int i=0; i<render.length; i++) {
+	        for(int j=0; j<render[i].length; j++) {
+	           render[i][j].resize(cell_width, cell_height);
+	            render[i][j].relocate((cell_width*i + cell_width/4), cell_height*j + cell_height/4); 
+	            // cellwidth & cellheight /4 because smaller pieces(pieces are /4)
+	        }
+	    }
+	}
+	
 	static void changeBackground() { //method to change background of board
 		//change background (3 options)
 		if(change>1) change =0;
@@ -167,4 +220,3 @@ public class GoBoard extends Pane{
 		//System.out.println("Change: " + change); //test
 	}
 }
-

@@ -9,7 +9,6 @@ public class GoGameLogic {
 	private IntegerProperty scoreProperty; 
 	private GoBoard goBoard;
 	
-	private GoPiece[][] render;
 	
 	
 	// the current player who is playing and who is his opposition
@@ -28,10 +27,11 @@ public class GoGameLogic {
 	
 	public GoGameLogic(GoBoard goBoard) {
 		super();
-		this.goBoard = 	goBoard;
+		this.goBoard = goBoard;
 		this.score = 1;
 		in_play = true; 
-		resetGame();
+		
+		//resetGame();
 		//Making a SimpleIntegerProperty which will bind to the TextField in the controlPanel
 		this.scoreProperty = new SimpleIntegerProperty(this.score);
 	}
@@ -44,13 +44,13 @@ public class GoGameLogic {
 		//this.resetRenders();
 	
 		//starting pieces
-		render[2][2] = new GoPiece(1);
+		/*render[2][2] = new GoPiece(1);
 		render[2][1] = new GoPiece(2);
 		render[1][2] = new GoPiece(2);
 		render[1][1] = new GoPiece(1);
 			
 		goBoard.getChildren().addAll(render[2][2], render[2][1], render[1][2], render[1][1]);
-
+*/
 		in_play = true; 
 		current_player = 2;
 		opposing = 1;
@@ -59,18 +59,7 @@ public class GoGameLogic {
 		canMove(); //call can move to display the viable moves in grey on reset
 	}
 		
-	// private method that will reset the renders
-	private void resetRenders() {
-		//call setPiece() method of each render object with a value of 0
-		for(int i=0; i<render.length; i++) {
-	        for(int j=0; j<render[i].length; j++) {
-	            //render[i][j].setPiece(0); // doesn't change actual value of piece
-	        	goBoard.getChildren().remove(render[i][j]); //remove previous piece
-	            render[i][j] = new GoPiece(0); // reset to 0
-	            goBoard.getChildren().add(render[i][j]);
-	        }
-	    }
-	}
+	
 	
 	// public method that will try to place a piece in the given x,y coordinate
 
@@ -80,22 +69,36 @@ public class GoGameLogic {
 	  final int cellx = (int) (x / goBoard.cell_width);
 	  //System.out.println("width: " + goBoard.cell_width);
 	  final int celly = (int) (y / goBoard.cell_height);
-	  System.out.println("------------0------------" );
+	  System.out.println("GameLogic" );
 
 	  // if the game is not in play then do nothing
 	  if(!in_play)
 	    return;
 	  
+	  goBoard.placePiece(cellx , celly);
+	  // ====== Steps =======
+	  // isEmpty
+	  
+	  // Not KO
+	  
+	  // IF is Capture
+	  
+	  // ELSE Not Suicide
+	  
+	  
 	  System.out.println("------------1------------" );
 
+	  
 	  // if there is a piece already placed then return and do nothing
 	  //if(render[cellx][celly].getPiece() != 0)
 		 // return;
+	  
 	  System.out.println("------------2-----------" );
 
 	  // determine what pieces surround the current piece. if there is no opposing
 	  // pieces then a valid move cannot be made.
 	// determineSurrounding(cellx, celly);
+	  
 	  System.out.println("------------3-----------" );
 
 	//  if(!adjacentOpposingPiece())
@@ -137,13 +140,12 @@ public class GoGameLogic {
 	}
 	
 	// private method for placing a piece and reversing pieces
-	private void placeAndReverse(final int x, final int y) {
-		//place
-		 //reset the guide-shadow piece
+	public void placeAndReverse(final int x, final int y) {
+		//place		
 		System.out.println(x + " , " + y);
-		//render[x][y].setPiece(0);
-		render[x][y] = new GoPiece(1);
-		goBoard.getChildren().add(render[x][y]);
+
+		
+		
 //		//reverse
 //		for(int i=0; i<can_reverse.length; i++) {
 //			for(int j=0; j<can_reverse[i].length; j++) {
@@ -152,6 +154,9 @@ public class GoGameLogic {
 //		}	
 	}
 	
+	// private method that will initialise everything in the render array
+	
+				
 	// private method to determine if a player has a move available + SHOW VIABLE MOVES IN GREY
 	private boolean canMove() {
 		boolean canmove = true;
@@ -196,16 +201,7 @@ public class GoGameLogic {
 				}
 			}
 
-			// private method for resizing and relocating all the pieces
-			private void pieceResizeRelocate() {
-				for(int i=0; i<render.length; i++) {
-			        for(int j=0; j<render[i].length; j++) {
-			           render[i][j].resize(cell_width, cell_height);
-			            render[i][j].relocate((cell_width*i + cell_width/4), cell_height*j + cell_height/4); 
-			            // cellwidth & cellheight /4 because smaller pieces(pieces are /4)
-			        }
-			    }
-			}
+			
 			
 			// private method for determining which pieces surround x,y will update the
 			// surrounding array to reflect this
@@ -379,17 +375,7 @@ public class GoGameLogic {
 				getChildren().add(winnerLabel);
 			}	
 
-			// private method that will initialise everything in the render array
-			private void initialiseRender() {
-				//create render objects in render array and construct with value of 0 for empty space
-				// 8x8 2d array of pieces
-				for(int i=0; i<render.length; i++) {
-			        for(int j=0; j<render[i].length; j++) {
-			            render[i][j] = new ReversiPiece(0);
-			            getChildren().add(render[i][j]);
-			        }
-			    }
-			}
+			
 		}
 
 */
