@@ -13,7 +13,7 @@ class GoCustomControl extends Control {
 		this.goGameLogic = 	goGameLogic;	
 		// set the default skin and generate a board
 		setSkin(new GoCustomControlSkin(this));
-		this.goGameLogic = goGameLogic;
+	
 		this.setStyle("-fx-background-color: yellow;");
 		getChildren().add(goGameLogic.getBoard());
 
@@ -24,6 +24,7 @@ class GoCustomControl extends Control {
 			@Override
 			public void handle(MouseEvent event) {
 				goGameLogic.placePiece(event.getX(), event.getY());
+				System.out.println("Control");
 				
 			}
 		});
