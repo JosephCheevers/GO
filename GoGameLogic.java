@@ -1,228 +1,408 @@
 package gogame;
 
-import javafx.scene.control.Label;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Translate;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
-public class GoBoard extends Pane{
-		
-	// rectangle that makes the background of the board
-	public static Rectangle background;
-	// arrays for the lines that makeup the horizontal and vertical grid lines
-	private Line[] horizontal;
-	private Line[] vertical;
-	// arrays holding translate objects for the horizontal and vertical grid lines
-	private Translate[] horizontal_t;
-	private Translate[] vertical_t;
-
-	// the width and height of a cell in the board
-	public double cell_width;
-	public double cell_height;
-
-	private GoPiece[][] render;
-
-	//Label for displaying winners
-	Label winnerLabel = new Label();
+public class GoGameLogic {
 	
-	static int change = 0; // int for background changes
+	private Integer score; 
+	private IntegerProperty scoreProperty; 
+	private GoBoard goBoard;
 	
-	//====================== New Stuff ========================
+	
+	// the current player who is playing and who is his opposition
+	public static int current_player;
+	public static int opposing;
 
-	public void setRenderPos( final int x , final int y) {
-		 render[x][y].setPiece(0);
-	}
+	// is the game currently in play
+	private boolean in_play;
+	// current scores of player 1 and player 2
+	private int player1_score;
+	private int player2_score;
 	
-	public int getRenderPos( final int x , final int y) {
-		return render[x][y].getPiece();
-	}
-	//=========================================================
-	public GoBoard() {
+	private int[][] surrounding;
+	private boolean[][] can_reverse;
+	
+	
+	public GoGameLogic(GoBoard goBoard) {
 		super();
-		this.getChildren().add(new Label("The Board"));	
-	
-		// allocate memory for arrays
-		//variable for board size
-		int boardsize = 7;
-		//render = new ReversiPiece[boardsize][boardsize];
-		horizontal = new Line[boardsize];
-		vertical = new Line[boardsize];
-		horizontal_t = new Translate[boardsize];
-		vertical_t = new Translate[boardsize];
+		this.goBoard = goBoard;
+		this.score = 1;
 		
-		render = new GoPiece[7][7];
+		surrounding = new int[3][3];
+		can_reverse = new boolean[3][3];
+
+		resetGame();
 		
-		// call methods for initialising lines & background, render and resetting game
-		this.initialiseLinesBackground();
-		initialiseRender();
-		
-		//this.initialiseRender();
-		//this.resetGame();
-		//this.canMove();
+		//Making a SimpleIntegerProperty which will bind to the TextField in the controlPanel
+		this.scoreProperty = new SimpleIntegerProperty(this.score);
 	}
 
-		// overridden version of the resize method to give the board the correct size
-	@Override
-	public void resize(double width, double height) {
-		super.resize(width, height);
-		
-		// figure out the width and height of a cell
-		cell_width = width / 7.0;
-		cell_height = height / 7.0;
-		
-		// resize the rectangle to take the full size
-		background.setWidth(width); background.setHeight(height);
-		
-		//resize and reposition winner label
-		 //style: changing font size with resize
-		
-		winnerLabel.setStyle("-fx-text-fill: RED;-fx-font-size:" + cell_width/2.5 + "pt; "
-				+ "-fx-font-family: \"Helvetica\", Georgia, Sans-serif;"); 
-	
-		//winnerLabel.setLayoutX((width/2.5)); winnerLabel.setLayoutY((height/2.5));	 //resize - NOT WORKING
-		//winnerLabel.setLayoutX((width - winnerLabel.getWidth()) / 2); // NOT WORKING
-		
-		//resize and relocate horizontal and vertical lines
-		this.horizontalResizeRelocate(width);
-		this.verticalResizeRelocate(height);
-		
-		//resize and relocate pieces
-		pieceResizeRelocate();
+	public GoBoard getBoard() {
+		return goBoard;
 	}
+
+	public void resetGame() {
+		goBoard.resetRenders();
+	
+		in_play = true; 
+		current_player = 1;
+		opposing = 2;
+		player1_score = 0;
+		player2_score = 0;
+		canMove(); //call can move to display the viable moves in grey on reset
+	}
+		
+	
+	
+	// public method that will try to place a piece in the given x,y coordinate
+
+	public void placePiece(double x, double y) {
+		
+	  // figure out which cell the current player has clicked on
+	  final int cellx = (int) (x / goBoard.cell_width);
+	  final int celly = (int) (y / goBoard.cell_height);
+	  System.out.println("GameLogic" );
+
+	  // if the game is not in play then do nothing
+	  if(!in_play)
+	    return;
+	  
+	  // ====== Steps =======
+	  
+	  // isEmpty
+	  System.out.println("------------1------------" );
+	  
+	  if(goBoard.getRenderPos(cellx, celly) != 0)
+	  	return;
+	  
+	  	// Capture
+	  System.out.println("------------2-----------" );	
+  		//capture(cellx , celly);
+
+	  // Not Suicide
+	  System.out.println("------------3-----------" );
+	  
+	  determineSurrounding(cellx, celly);
+	  if(adjacentOpposingPiece())
+	  		return;
+
+	  // Not KO
+	  System.out.println("-------------4-----------" );
+
+		  // IF is Capture
+	  System.out.println("-------------4.1-----------" );
+
+		  // ELSE Not Suicide
+	  System.out.println("-------------4.2-----------" );
+
+	  System.out.println("-------------5-----------" );
+
+	  placeAndReverse(cellx, celly);
+		
+	  // print out some information
+	  System.out.println("---------- INFO --------" );
+	  System.out.println("placed at: " + cellx + ", " + celly);
+	  System.out.print("::: SCORES: " );
+	  System.out.println("W:" + player1_score + " /  B:" + player2_score);
+	  System.out.println("------------------------" );
+	  System.out.println();
+	  System.out.println();
+	  
+	  swapPlayers();
+
+	  this.score++;
+	  //Update the SimpleIntegerProperty scoreProperty when you update the int score so that the TextField tf_score in the GoControlPanel updates automatically
+	  this.scoreProperty.setValue(this.score);	  
+
+	  // determine what pieces surround the current piece. if there is no opposing
+	  // pieces then a valid move cannot be made.
+	  
+
+	//  if(!adjacentOpposingPiece())
+	//  return;
+
+	  // see if a reverse can be made in any direction if none can be made then return
+	// if(!determineReverse(cellx, celly))
+	// return;
 		
 
-	// private method that will initialise the background and the lines
-	private void initialiseLinesBackground() {
-		background = new Rectangle();
-		
-		//background image 
-		Image image = new Image("board1.jpg");
-		ImagePattern imagePattern = new ImagePattern(image);
-		background.setFill(imagePattern);
-		this.getChildren().add(background);	
-		DropShadow shadow1 = new DropShadow(1.0, 1.0, 1.0, Color.BLACK);
-	
-		// generate HORIZONTAL lines and attach their translate objects
-		for(int i = 0; i<horizontal.length; i++) {
-			horizontal[i] = new Line();
-			horizontal[i].setStroke(Color.BLACK);
-			horizontal[i].setStartX(0);  //cell width
-			horizontal[i].setEndX(0);
-			horizontal[i].setStartY(0); horizontal[i].setEndY(0);
-			horizontal[i].setEffect(shadow1); //add shadow
-			
-			horizontal_t[i] = new Translate(0, 0);
-			horizontal[i].getTransforms().add(horizontal_t[i]);
+	  // at this point we have done all the checks and they have passed so now we can place
+	  // the piece and perform the reversing
+	  
+	  
+	  /*if(goBoard.getRenderPos(cellx, celly) != 0)
+		  capture(cellx , celly);
+	  else*/
+	 
+	  
+	  //if we get to this point then a successful move has been made so swap the
+	  //players and update the scores
+	  //updateScores();
+	  //showMoves();
+	  //determineEndGame(); //check endGame after printing scores
 
-			this.getChildren().add(horizontal[i]); // add to board
-		}
-		// generate VERTICAL lines and attach their translate objects
-		for(int i = 0; i<vertical.length; i++) {
-			vertical[i] = new Line();
-			vertical[i].setStartX(0); 
-			vertical[i].setStartY(0); vertical[i].setEndY(0); //cell height
-			vertical[i].setEffect(shadow1); //add shadow
-			
-			vertical_t[i] = new Translate(0, 0);
-			vertical[i].getTransforms().add(vertical_t[i]);
-
-			this.getChildren().add(vertical[i]); // add to board
-		}
-	}
-	
-	// private method for resizing and relocating the horizontal lines
-	private void horizontalResizeRelocate(final double width) {
-		for(int i = 0; i<horizontal.length; i++) {
-			horizontal[i].setStartX(cell_width*0.5);
-			horizontal[i].setEndX(width - cell_width*0.5);
-			horizontal_t[i].setY(cell_height*(i+0.5));
-		}	
-	}
-	
-	// private method for resizing and relocating the vertical lines
-	private void verticalResizeRelocate(final double height) {
-		for(int i = 0; i<vertical.length; i++) {
-			vertical[i].setStartY(cell_height*0.5);
-			vertical[i].setEndY(height - cell_height/2);
-			vertical_t[i].setX(cell_width*(i+0.5));
-		}	
-	}
-	
-	public void placePiece(final int x, final int y) {
-		// Step 28
-		System.out.println(x + "," + y);
-		render[x][y].setPiece(GoGameLogic.current_player);// = new GoPiece(1);
-		System.out.println("Board");
-		System.out.println(render[x][y]);
 		
-		//getChildren().add(render[x][y]);
-			
+	}
+
+//================== New Code ==================================	
+	private void capture(final int x , final int y) {
+		goBoard.setRenderPos(x, y);
 	}
 	
-	private void initialiseRender() {
-		//create render objects in render array and construct with value of 0 for empty space
-		// 8x8 2d array of pieces
-		for(int i=0; i<render.length; i++) {
-	        for(int j=0; j<render[i].length; j++) {
-	            render[i][j] = new GoPiece(0);
-	            getChildren().add(render[i][j]);
+	private void determineSurrounding(final int x, final int y) {
+		for(int i=0; i<surrounding.length; i++) {
+	        for(int j=0; j<surrounding[i].length; j++) {
+	            surrounding[i][j] = goBoard.getRenderPos(x-(i-1), y-(j-1));    
+	            System.out.println(i +" , "+ j);
+	            System.out.println(surrounding[i][j]);
 	        }
-	    }
+	    }	
+		// surrounding array
+		// (x-1, y-1  | x, y-1 | x+1, y-1)
+		// (x-1, y    | x, y   | x+1, y)
+		// (x-1, y+1  | x, y+1 | x+1, y+1) 
+		// x -> Columns, y -> Rows
 	}
 	
-	// private method that will reset the renders
-	public void resetRenders() {
-		//call setPiece() method of each render object with a value of 0
-		for(int i=0; i<render.length; i++) {
-	        for(int j=0; j<render[i].length; j++) {
-	            //render[i][j].setPiece(0); // doesn't change actual value of piece
-	        	getChildren().remove(render[i][j]); //remove previous piece
-	            render[i][j] = new GoPiece(0); // reset to 0
-	            getChildren().add(render[i][j]);
-	        }
-	    }
+	// private method for determining if any of the surrounding pieces are an opposing
+	// piece. if a single one exists then return true otherwise false
+	private boolean adjacentOpposingPiece() {
+	
+	// determine if suicide
+	if(surrounding[0][1] == opposing && surrounding[1][0] == opposing 
+    		&& surrounding[2][1] == opposing && surrounding[1][2]== opposing) {
+    	System.out.println("Suicide: Cannot Move");
+    	return true;
 	}
 	
-	// private method for resizing and relocating all the pieces
-	private void pieceResizeRelocate() {
-		for(int i=0; i<render.length; i++) {
-	        for(int j=0; j<render[i].length; j++) {
-	           render[i][j].resize(cell_width, cell_height);
-	            render[i][j].relocate((cell_width*i + cell_width/4), cell_height*j + cell_height/4); // edit piece size here
-	            // cellwidth & cellheight /4 because smaller pieces(pieces are /4)
-	        }
-	    }
-	}
-	
-	static void changeBackground() { //method to change background of board
-		//change background (3 options)
-		if(change>1) change =0;
-		else {
-			change++;
+	//hardcode - Pieces at top, bottom, left and right only
+	//if(surrounding[0][1] == opposing) return true; 
+	//else if(surrounding[1][0] == opposing) return true;
+	//else if(surrounding[1][2] == opposing) return true;
+	//else if(surrounding[2][1] == opposing) return true;
+						
+	/*check all surrounding pieces (inc diagonal)
+	for(int i = 0; i<surrounding.length; i++) {
+		for(int j = 0; j<surrounding[i].length; j++) {
+			if(surrounding[i][j] == opposing) return true;
 		}
+	}*/
+	return false;
+}
+	
+	//========================================================================
+	
+	
+	
+	// This method is called when binding the SimpleIntegerProperty scoreProperty in this class to the TextField tf_score in controlPanel
+	public IntegerProperty getScore() {
+		return scoreProperty;
+	}
+	
+	// private method for placing a piece and reversing pieces
+	public void placeAndReverse(final int x, final int y) {
+		//place		
+		//System.out.println(x + " , " + y);
+		goBoard.placePiece(x , y);
 		
-		if(change == 0) {
-			//background.setStyle("-fx-background-image: url(\"board1.jpg\");-fx-background-repeat: no-repeat;-fx-background-size: contain;");
-			Image image = new Image("board1.jpg");
-			ImagePattern imagePattern = new ImagePattern(image);
-			background.setFill(imagePattern);
-		}
-		else if(change == 1) {
-			Image image = new Image("board2.jpg");
-			ImagePattern imagePattern = new ImagePattern(image);
-			background.setFill(imagePattern);
-		}
-		else {
-			Image image = new Image("board3.jpg");
-			ImagePattern imagePattern = new ImagePattern(image);
-			background.setFill(imagePattern);
-		}
-		//System.out.println("Change: " + change); //test
+//		//reverse
+//		for(int i=0; i<can_reverse.length; i++) {
+//			for(int j=0; j<can_reverse[i].length; j++) {
+//				if(can_reverse[i][j]) reverseChain(x, y, j-1, i-1);
+//			}
+//		}	
 	}
+	
+	
+	//private method for swapping the players
+	public void swapPlayers() {
+		  int temp = current_player;
+		  current_player = opposing;
+		  opposing = temp;
+	}
+	
+				
+	// private method to determine if a player has a move available + SHOW VIABLE MOVES IN GREY
+	private boolean canMove() {
+		boolean canmove = true;
+
+		/*for(int i=0; i<render.length; i++) {
+	        for(int j=0; j<render[i].length; j++) {
+	            if(render[i][j].getPiece() == 0) { // is empty space?
+    			render[i][j].setPiece(0); //reset previous pieces
+    			determineSurrounding(i, j); 
+        		if(adjacentOpposingPiece() && determineReverse(i,j)) { //has adjacent and viable reverse?
+        			//render[i][j].setPiece(3); //set empty spaces that are viable moves to grey
+            			canmove = true;
+            		}
+	            }
+	        }
+	    }*/
+		return canmove;
+	}
+	
 }
 
+/*			
+			// private method for updating the player scores
+			private void updateScores() {
+				player1_score = 0;
+				player2_score = 0;
+				for(int i = 0; i<render.length; i++) {
+					for(int j = 0; j<render[i].length; j++) {
+						if(render[i][j].getPiece() == 1) player1_score++; //add to p1score
+						else if(render[i][j].getPiece() == 2) player2_score++; //add to p2score
+					}
+				}
+			}
+
+			
+			
+			// private method for determining which pieces surround x,y will update the
+			// surrounding array to reflect this
+			
+			
+			// private method for determining if a reverse can be made will update the can_reverse
+			// array to reflect the answers will return true if a single reverse is found
+			private boolean determineReverse(final int x, final int y) {
+				boolean checkrev = false;
+			
+				for(int i=0; i<can_reverse.length; i++) {
+			        for(int j=0; j<can_reverse[i].length; j++) {
+			        		can_reverse[i][j] = isReverseChain(x, y, (j-1), (i-1), current_player);
+			        		if(can_reverse[i][j]) checkrev = true;
+			        }
+			    }
+				// Directions
+				// UPLEFT, UP, UPRIGHT   (x-1, y-1) | (x, y-1) | (x+1, y-1)       //COLUMN, ROW
+				// LEFT, RIGHT           (x-1, y)   | PIECE    | (x+1, y)
+				// DOWNLEFT, DOWN, RIGHT (x-1, y+1) | (x, y+1) | (x+1, y+1)
+
+				return checkrev; 
+			}
+			
+			// private method for determining if a reverse can be made from a position (x,y) for
+			// a player piece in the given direction (dx,dy) returns true if possible
+			// assumes that the first piece has already been checked
+			private boolean isReverseChain(final int x, final int y, final int dx, final int dy, final int player) {
+				int cx = x; 
+				int cy = y; 
+				boolean check1 = true; //boolean, while the next piece is an opposing piece
+				int count = 0;
+				
+				while(check1) {
+					if(getPiece(cx+dx, cy+dy) != opposing) check1 = false;
+					else {
+						cx = cx+dx; cy = cy+dy;
+						count++;
+					}
+				}
+				
+				if(count>0 && getPiece(cx+dx, cy+dy) == current_player) {
+					//System.out.println("Holy crap it worked");
+					return true;
+				}
+				return false;
+			}
+			
+			
+			
+		
+			
+			// private method to reverse a chain
+			private void reverseChain(final int x, final int y, final int dx, final int dy) {
+				int currx = x;
+				int curry = y;
+				boolean gonext = true; // while the next piece is an opposing piece, keep going
+
+				while(gonext) {
+					if(getPiece(currx+dx, curry+dy) != opposing) gonext = false;
+					else {
+						render[currx+dx][curry+dy].swapPiece();
+						//render[currx+dx][curry+dy] = new ReversiPiece(current_player); // test
+						//getChildren().add(render[currx+dx][curry+dy]); //test
+						currx = currx+dx; curry = curry+dy;
+					}
+				}
+				
+				if(getPiece(currx+dx, curry+dy) == current_player) {
+					return;
+				}
+			}
+			
+			// private method for getting a piece on the board. this will return the board
+			// value unless we access an index that doesnt exist. this is to make the code
+			// for determing reverse chains much easier
+			private int getPiece(final int x, final int y) {
+				if(x <6 && x >=0 && y >= 0 && y<6) {
+					return render[x][y].getPiece();
+				}
+				return -1;
+			}
+			
+			// private method that will determine if the end of the game has been reached
+			private void determineEndGame() {
+				//no empty cells on board
+				int emptycells = 0;
+				for(int i=0; i<render.length; i++) {
+			        for(int j=0; j<render[i].length; j++) {
+			        		if(render[i][j].getPiece() == 0) emptycells++; //count empty spaces
+			        }
+			    }
+				if (emptycells == 0) {
+					System.out.println("   No more empty spaces.");
+					System.out.println();
+					System.out.println("   *********** GAME OVER ***************");
+					determineWinner();
+					in_play = false;
+				}
+				//player has lost all pieces
+				else if(player1_score == 0 || player2_score == 0) {
+					System.out.println("   *********** GAME OVER ***************");
+					determineWinner();
+					in_play = false;
+				}
+				//player cannot make move
+				else if(!canMove()) { //current player can't move
+					System.out.println("No moves for Player " + current_player);
+					swapPlayers();
+					if(!canMove()) { //both players cannot make move
+						System.out.println("   No possible moves for both players.");
+						System.out.println();
+						System.out.println("   *********** GAME OVER ***************");
+						determineWinner();
+						in_play = false;
+					}
+				}
+			}*/
+			
+		
+			
+			/*
+			// private method that determines who won the game
+			private void determineWinner() {
+				 //glow for label
+			      Glow glow = new Glow(); 
+			      glow.setLevel(0.9);
+			      winnerLabel.setEffect(glow); 
+
+				if(player1_score > player2_score) { 
+					System.out.println("    ---- White WINS! ----"); 
+					winnerLabel.setText("  ** White Wins! **");
+					}
+				else if(player1_score < player2_score) { 
+					System.out.println("    ---- Black WINS! ----");
+					winnerLabel.setText("  ** Black Wins! **");
+				}
+				else { 
+					System.out.println("    ----  DRAW  ----");
+					winnerLabel.setText("  ** DRAW **");		
+				}
+				getChildren().add(winnerLabel);
+			}	
+
+			
+		}
+
+*/
