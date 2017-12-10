@@ -226,3 +226,5 @@ public class GoBoard extends Pane{
 	}
 }
 
+
+
