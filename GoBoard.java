@@ -151,13 +151,14 @@ public class GoBoard extends Pane{
 		// Step 28
 		System.out.println(x + "," + y);
 		
-		render[x][y].setPiece(1);// = new GoPiece(1);
-		System.out.println("Board");
+		render[x][y].setPiece(GoGameLogic.get_player());// = new GoPiece(1); GoGameLogic.get_player()
+		System.out.println("Board" + GoGameLogic.get_player());
 		System.out.println(render[x][y]);
 		
 		//getChildren().add(render[x][y]);
 			
 	}
+	
 	
 	private void initialiseRender() {
 		//create render objects in render array and construct with value of 0 for empty space
@@ -171,7 +172,7 @@ public class GoBoard extends Pane{
 	}
 	
 	// private method that will reset the renders
-	private void resetRenders() {
+	public void resetRenders() {
 		//call setPiece() method of each render object with a value of 0
 		for(int i=0; i<render.length; i++) {
 	        for(int j=0; j<render[i].length; j++) {

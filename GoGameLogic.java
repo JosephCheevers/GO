@@ -6,14 +6,21 @@ import javafx.beans.property.SimpleIntegerProperty;
 public class GoGameLogic {
 	
 	private Integer score; 
+	private Integer prisoners;
+	private Integer playerCopy;
 	private IntegerProperty scoreProperty; 
+	private IntegerProperty playerProperty;
+	private IntegerProperty prisonerProperty;
 	private GoBoard goBoard;
 	
 	
 	
 	// the current player who is playing and who is his opposition
-	private int current_player;
+	private static int current_player;
 	private int opposing;
+
+	
+
 
 	// is the game currently in play
 	private boolean in_play;
@@ -28,12 +35,16 @@ public class GoGameLogic {
 	public GoGameLogic(GoBoard goBoard) {
 		super();
 		this.goBoard = goBoard;
-		this.score = 1;
+		this.score = 0;
+		this.prisoners = 0;
+		this.playerCopy = current_player;
 		in_play = true; 
 		
-		//resetGame();
+		resetGame();
 		//Making a SimpleIntegerProperty which will bind to the TextField in the controlPanel
 		this.scoreProperty = new SimpleIntegerProperty(this.score);
+		this.playerProperty = new SimpleIntegerProperty(current_player);
+		this.prisonerProperty = new SimpleIntegerProperty(this.prisoners);
 	}
 
 	public GoBoard getBoard() {
@@ -41,7 +52,7 @@ public class GoGameLogic {
 	}
 
 	public void resetGame() {
-		//this.resetRenders();
+		goBoard.resetRenders();
 	
 		//starting pieces
 		/*render[2][2] = new GoPiece(1);
@@ -56,7 +67,20 @@ public class GoGameLogic {
 		opposing = 1;
 		player1_score = 2;
 		player2_score = 2;
+		score = 0;
+		prisoners = 2;
+		playerCopy = 2;
 		canMove(); //call can move to display the viable moves in grey on reset
+	}
+	public static int get_player() {
+		int player = current_player;
+		return player;
+	}
+	public IntegerProperty get_playerProperty() {
+		//int player = current_player;
+//		IntegerProperty playerProperty;
+//		playerProperty = new SimpleIntegerProperty(player);
+		return playerProperty;
 	}
 		
 	
@@ -86,24 +110,24 @@ public class GoGameLogic {
 	  // ELSE Not Suicide
 	  
 	  
-	  System.out.println("------------1------------" );
+	 // System.out.println("------------1------------" );
 
 	  
 	  // if there is a piece already placed then return and do nothing
 	  //if(render[cellx][celly].getPiece() != 0)
 		 // return;
 	  
-	  System.out.println("------------2-----------" );
+	  //System.out.println("------------2-----------" );
 
 	  // determine what pieces surround the current piece. if there is no opposing
 	  // pieces then a valid move cannot be made.
 	// determineSurrounding(cellx, celly);
 	  
-	  System.out.println("------------3-----------" );
+	  //System.out.println("------------3-----------" );
 
 	//  if(!adjacentOpposingPiece())
 	//  return;
-	  System.out.println("-------------4-----------" );
+	  //System.out.println("-------------4-----------" );
 
 	  // see if a reverse can be made in any direction if none can be made then return
 	// if(!determineReverse(cellx, celly))
@@ -124,19 +148,28 @@ public class GoGameLogic {
 	  
 	  //if we get to this point then a successful move has been made so swap the
 	  //players and update the scores
-	  //swapPlayers();
+	  swapPlayers();
 	  //updateScores();
 	  //showMoves();
 	  //determineEndGame(); //check endGame after printing scores
-
+	  	playerCopy = current_player;
 		this.score++;
-		//Update the SimpleIntegerProperty scoreProperty when you update the int score so that the TextField tf_score in the GoControlPanel updates automatically
+		this.prisoners++;
+		//updatePrisoners();
+		//Update the SimpleIntegerProperty scoreProperty when you update the int score 
+		//so that the TextField tf_score in the GoControlPanel updates automatically
 		this.scoreProperty.setValue(this.score);
+		this.prisonerProperty.setValue(this.prisoners);
+		this.playerProperty.setValue(current_player);
 	}
 
 	// This method is called when binding the SimpleIntegerProperty scoreProperty in this class to the TextField tf_score in controlPanel
 	public IntegerProperty getScore() {
 		return scoreProperty;
+	}
+	
+	public IntegerProperty getPrisonersProperty() {
+		return prisonerProperty;
 	}
 	
 	// private method for placing a piece and reversing pieces
@@ -153,6 +186,17 @@ public class GoGameLogic {
 //			}
 //		}	
 	}
+	
+	//private method for swapping the players
+	public void swapPlayers() {
+		  int temp = current_player;
+		  current_player = opposing;
+		  opposing = temp;
+		  
+		this.playerProperty.setValue(current_player);
+	}
+	
+
 	
 	// private method that will initialise everything in the render array
 	
@@ -176,30 +220,18 @@ public class GoGameLogic {
 		return canmove;
 	}
 	
+	// private method for updating the player scores
+	private void updatePrisoners() {
+		prisoners++;
+	}
+	
 
 
 }
 
 /*
 
-//private method for swapping the players
-			private void swapPlayers() {
-				  int temp = current_player;
-				  current_player = opposing;
-				  opposing = temp;
-			}
-			
-			// private method for updating the player scores
-			private void updateScores() {
-				player1_score = 0;
-				player2_score = 0;
-				for(int i = 0; i<render.length; i++) {
-					for(int j = 0; j<render[i].length; j++) {
-						if(render[i][j].getPiece() == 1) player1_score++; //add to p1score
-						else if(render[i][j].getPiece() == 2) player2_score++; //add to p2score
-					}
-				}
-			}
+
 
 			
 			
@@ -262,6 +294,18 @@ public class GoGameLogic {
 				}
 				return false;
 			}
+			
+				// private method for updating the player scores
+	private void updateScores() {
+		player1_score = 0;
+		player2_score = 0;
+		for(int i = 0; i<render.length; i++) {
+			for(int j = 0; j<render[i].length; j++) {
+				if(render[i][j].getPiece() == 1) player1_score++; //add to p1score
+				else if(render[i][j].getPiece() == 2) player2_score++; //add to p2score
+			}
+		}
+	}
 			
 			// private method for determining if any of the surrounding pieces are an opposing
 			// piece. if a single one exists then return true otherwise false
