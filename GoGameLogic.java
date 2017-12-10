@@ -9,6 +9,10 @@ public class GoGameLogic {
 	private IntegerProperty scoreProperty; 
 	private GoBoard goBoard;
 	
+	private Integer prisoners;
+	private Integer playerCopy;
+	private IntegerProperty playerProperty;
+	private IntegerProperty prisonerProperty;
 	
 	// the current player who is playing and who is his opposition
 	public static int current_player;
@@ -17,25 +21,30 @@ public class GoGameLogic {
 	// is the game currently in play
 	private boolean in_play;
 	// current scores of player 1 and player 2
-	private int player1_score;
-	private int player2_score;
+	//private int player1_score;
+//	private int player2_score;
 	
 	private int[][] surrounding;
-	private boolean[][] can_reverse;
+	//private boolean[][] can_reverse;
 	
 	
 	public GoGameLogic(GoBoard goBoard) {
 		super();
+
 		this.goBoard = goBoard;
-		this.score = 1;
+		this.score = 0;
+		this.prisoners = 0;
+		this.playerCopy = current_player;
+		in_play = true; 
 		
 		surrounding = new int[3][3];
-		can_reverse = new boolean[3][3];
-
+		//can_reverse = new boolean[3][3];
 		resetGame();
-		
 		//Making a SimpleIntegerProperty which will bind to the TextField in the controlPanel
 		this.scoreProperty = new SimpleIntegerProperty(this.score);
+		this.playerProperty = new SimpleIntegerProperty(current_player);
+		this.prisonerProperty = new SimpleIntegerProperty(this.prisoners);
+		
 	}
 
 	public GoBoard getBoard() {
@@ -44,16 +53,37 @@ public class GoGameLogic {
 
 	public void resetGame() {
 		goBoard.resetRenders();
-	
+		
+		//starting pieces
+		/*render[2][2] = new GoPiece(1);
+		render[2][1] = new GoPiece(2);
+		render[1][2] = new GoPiece(2);
+		render[1][1] = new GoPiece(1);
+			
+		goBoard.getChildren().addAll(render[2][2], render[2][1], render[1][2], render[1][1]);
+*/
 		in_play = true; 
-		current_player = 1;
-		opposing = 2;
-		player1_score = 0;
-		player2_score = 0;
+		current_player = 2;
+		opposing = 1;
+		score = 0;
+		prisoners = 2;
+		playerCopy = 2;
 		canMove(); //call can move to display the viable moves in grey on reset
 	}
-		
 	
+	//================= Jen ========================
+	public static int get_player() {
+		int player = current_player;
+		return player;
+	}
+	
+	public IntegerProperty get_playerProperty() {
+		//int player = current_player;
+		//IntegerProperty playerProperty;
+		//playerProperty = new SimpleIntegerProperty(player);
+		return playerProperty;
+	}	
+// ====================================================
 	
 	// public method that will try to place a piece in the given x,y coordinate
 
@@ -104,7 +134,7 @@ public class GoGameLogic {
 	  System.out.println("---------- INFO --------" );
 	  System.out.println("placed at: " + cellx + ", " + celly);
 	  System.out.print("::: SCORES: " );
-	  System.out.println("W:" + player1_score + " /  B:" + player2_score);
+	  //System.out.println("W:" + player1_score + " /  B:" + player2_score);
 	  System.out.println("------------------------" );
 	  System.out.println();
 	  System.out.println();
@@ -141,11 +171,33 @@ public class GoGameLogic {
 	  //updateScores();
 	  //showMoves();
 	  //determineEndGame(); //check endGame after printing scores
-
+	//determineEndGame(); //check endGame after printing scores
+	  
+	  	//========================= Jen =========================
+	  	playerCopy = current_player;
+		this.score++;
+		this.prisoners++;
+		//updatePrisoners();
+		//Update the SimpleIntegerProperty scoreProperty when you update the int score 
+		//so that the TextField tf_score in the GoControlPanel updates automatically
+		this.scoreProperty.setValue(this.score);
+		this.prisonerProperty.setValue(this.prisoners);
+		this.playerProperty.setValue(current_player);
 		
 	}
 
-//================== New Code ==================================	
+//=========================New Code Jen =========================
+		
+		public IntegerProperty getPrisonersProperty() {
+			return prisonerProperty;
+		}
+		
+		// private method for updating the player scores
+		private void updatePrisoners() {
+			prisoners++;
+		}
+		
+//================== New Code Joe ==================================	
 	private void capture(final int x , final int y) {
 		goBoard.setRenderPos(x, y);
 	}
@@ -220,6 +272,8 @@ public class GoGameLogic {
 		  int temp = current_player;
 		  current_player = opposing;
 		  opposing = temp;
+		  
+		this.playerProperty.setValue(current_player);
 	}
 	
 				
