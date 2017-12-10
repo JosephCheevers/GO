@@ -11,7 +11,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Translate;
 
 public class GoBoard extends Pane{
-	
+		
 	// rectangle that makes the background of the board
 	public static Rectangle background;
 	// arrays for the lines that makeup the horizontal and vertical grid lines
@@ -27,17 +27,25 @@ public class GoBoard extends Pane{
 
 	private GoPiece[][] render;
 
-
 	//Label for displaying winners
 	Label winnerLabel = new Label();
 	
 	static int change = 0; // int for background changes
 	
+	//====================== New Stuff ========================
+
+	public void setRenderPos( final int x , final int y) {
+		 render[x][y].setPiece(0);
+	}
+	
+	public int getRenderPos( final int x , final int y) {
+		return render[x][y].getPiece();
+	}
+	//=========================================================
 	public GoBoard() {
 		super();
 		this.getChildren().add(new Label("The Board"));	
 	
-			
 		// allocate memory for arrays
 		//variable for board size
 		int boardsize = 7;
@@ -49,11 +57,10 @@ public class GoBoard extends Pane{
 		
 		render = new GoPiece[7][7];
 		
-
-		
 		// call methods for initialising lines & background, render and resetting game
 		this.initialiseLinesBackground();
 		initialiseRender();
+		
 		//this.initialiseRender();
 		//this.resetGame();
 		//this.canMove();
@@ -110,7 +117,6 @@ public class GoBoard extends Pane{
 			horizontal[i].setEffect(shadow1); //add shadow
 			
 			horizontal_t[i] = new Translate(0, 0);
-
 			horizontal[i].getTransforms().add(horizontal_t[i]);
 
 			this.getChildren().add(horizontal[i]); // add to board
@@ -150,8 +156,7 @@ public class GoBoard extends Pane{
 	public void placePiece(final int x, final int y) {
 		// Step 28
 		System.out.println(x + "," + y);
-		
-		render[x][y].setPiece(1);// = new GoPiece(1);
+		render[x][y].setPiece(GoGameLogic.current_player);// = new GoPiece(1);
 		System.out.println("Board");
 		System.out.println(render[x][y]);
 		
@@ -171,7 +176,7 @@ public class GoBoard extends Pane{
 	}
 	
 	// private method that will reset the renders
-	private void resetRenders() {
+	public void resetRenders() {
 		//call setPiece() method of each render object with a value of 0
 		for(int i=0; i<render.length; i++) {
 	        for(int j=0; j<render[i].length; j++) {
@@ -188,7 +193,7 @@ public class GoBoard extends Pane{
 		for(int i=0; i<render.length; i++) {
 	        for(int j=0; j<render[i].length; j++) {
 	           render[i][j].resize(cell_width, cell_height);
-	            render[i][j].relocate((cell_width*i + cell_width/4), cell_height*j + cell_height/4); 
+	            render[i][j].relocate((cell_width*i + cell_width/4), cell_height*j + cell_height/4); // edit piece size here
 	            // cellwidth & cellheight /4 because smaller pieces(pieces are /4)
 	        }
 	    }
@@ -220,3 +225,4 @@ public class GoBoard extends Pane{
 		//System.out.println("Change: " + change); //test
 	}
 }
+
