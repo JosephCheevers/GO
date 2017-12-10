@@ -5,15 +5,15 @@ import javafx.scene.control.Control;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-
 //class definition for a custom Go control
 class GoCustomControl extends Control {
+
 	// constructor for the class
 	public GoCustomControl(GoGameLogic goGameLogic) {
 		this.goGameLogic = 	goGameLogic;	
 		// set the default skin and generate a board
 		setSkin(new GoCustomControlSkin(this));
-	
+		this.goGameLogic = goGameLogic;
 		this.setStyle("-fx-background-color: yellow;");
 		getChildren().add(goGameLogic.getBoard());
 
@@ -39,7 +39,6 @@ class GoCustomControl extends Control {
 					goGameLogic.resetGame();
 			}
 		});
-
 	}
 
 	// overridden version of the resize method
