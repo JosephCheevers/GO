@@ -1,381 +1,307 @@
-package gogame;
+package _2017._09._assignments.projectgo.template.v2;
 
+import java.util.ArrayList;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 public class GoGameLogic {
-	
-	private Integer score; 
-	private IntegerProperty scoreProperty; 
-	private GoBoard goBoard;
-	
-	
-	
-	// the current player who is playing and who is his opposition
-	private int current_player;
-	private int opposing;
 
-	// is the game currently in play
-	private boolean in_play;
-	// current scores of player 1 and player 2
-	private int player1_score;
-	private int player2_score;
-	
-	// the width and height of a cell in the board
-	//private double cell_width;
-	//private double cell_height;
-	
+
+	// ************ PRIVATE MEMBER DATA  ************************************
+
+	private SimpleIntegerProperty currentPlayerProperty; // property to help with binding
+
+	private int playerCurrent; // the current player
+	private int playerOpposing; // the opposing player
+
+	private boolean in_play;  // is the game currently in play
+	private int scorePlayer1; // score of player1
+	private int scorePlayer2; // score of player2
+	private int passesPlayer1;// passes by player1
+	private int passesPlayer2;// passes by player2
+
+	private Integer score; 
+	private IntegerProperty scoreProperty;  
+
+	private ArrayList<Piece [][]> renders; // board history
+	private int renderCurrent; // index of the board currently in use in the board array
+
+	private GoBoard goBoard;  // reference to the GoBoard
+		
 	public GoGameLogic(GoBoard goBoard) {
 		super();
-		this.goBoard = goBoard;
+		this.goBoard = 	goBoard;
 		this.score = 1;
-		in_play = true; 
-		
-		//resetGame();
+		this.playerCurrent = 2;
 		//Making a SimpleIntegerProperty which will bind to the TextField in the controlPanel
 		this.scoreProperty = new SimpleIntegerProperty(this.score);
+		this.currentPlayerProperty = new SimpleIntegerProperty(this.playerCurrent);
+		this.resetGame();
+	} 
+
+	public void resetGame() {
+		
+		// reset the render
+		goBoard.resetRenders();
+		
+		in_play = true; 
+		
+		// reset the variables monitoring the game
+		playerCurrent = 2;
+		playerOpposing = 1;
+		score = 0;
+		scorePlayer1 = 0; 
+		scorePlayer2 = 0; 
+		passesPlayer1 = 0;
+		passesPlayer2 = 0;
+		canMove(); 
+		
+		//call can move to display the viable moves in grey on reset
+		
+
+
+		// reset renders (board history) 
+		this.renders = new ArrayList<Piece [][]>();
+		// save the board in renders
+		this.boardSave();
 	}
 
-	public GoBoard getBoard() {
+	// Return the GoBoard of GameLogic
+	public GoBoard getGoBoard() {
 		return goBoard;
 	}
 
-	public void resetGame() {
-		//this.resetRenders();
-	
-		//starting pieces
-		/*render[2][2] = new GoPiece(1);
-		render[2][1] = new GoPiece(2);
-		render[1][2] = new GoPiece(2);
-		render[1][1] = new GoPiece(1);
-			
-		goBoard.getChildren().addAll(render[2][2], render[2][1], render[1][2], render[1][1]);
-*/
-		in_play = true; 
-		current_player = 2;
-		opposing = 1;
-		player1_score = 2;
-		player2_score = 2;
-		canMove(); //call can move to display the viable moves in grey on reset
-	}
-		
-	
-	
-	// public method that will try to place a piece in the given x,y coordinate
 
-	public void placePiece(double x, double y) {
-		
-	  // figure out which cell the current player has clicked on
-	  final int cellx = (int) (x / goBoard.cell_width);
-	  //System.out.println("width: " + goBoard.cell_width);
-	  final int celly = (int) (y / goBoard.cell_height);
-	  System.out.println("GameLogic" );
+// ************ TRYING TO PLACE A PIECE FUNCTIONS  ************************************
 
-	  // if the game is not in play then do nothing
-	  if(!in_play)
-	    return;
-	  
-	  goBoard.placePiece(cellx , celly);
-	  // ====== Steps =======
-	  // isEmpty
-	  
-	  // Not KO
-	  
-	  // IF is Capture
-	  
-	  // ELSE Not Suicide
-	  
-	  
-	  System.out.println("------------1------------" );
-
-	  
-	  // if there is a piece already placed then return and do nothing
-	  //if(render[cellx][celly].getPiece() != 0)
-		 // return;
-	  
-	  System.out.println("------------2-----------" );
-
-	  // determine what pieces surround the current piece. if there is no opposing
-	  // pieces then a valid move cannot be made.
-	// determineSurrounding(cellx, celly);
-	  
-	  System.out.println("------------3-----------" );
-
-	//  if(!adjacentOpposingPiece())
-	//  return;
-	  System.out.println("-------------4-----------" );
-
-	  // see if a reverse can be made in any direction if none can be made then return
-	// if(!determineReverse(cellx, celly))
-	// return;
-		
-	  // at this point we have done all the checks and they have passed so now we can place
-	  // the piece and perform the reversing
-	  placeAndReverse(cellx, celly);
-	
-	  // print out some information
-	  System.out.println("---------- INFO --------" );
-	  System.out.println("placed at: " + cellx + ", " + celly);
-	  System.out.print("::: SCORES: " );
-	  System.out.println("W:" + player1_score + " /  B:" + player2_score);
-	  System.out.println("------------------------" );
-	  System.out.println();
-	  System.out.println();
-	  
-	  //if we get to this point then a successful move has been made so swap the
-	  //players and update the scores
-	  //swapPlayers();
-	  //updateScores();
-	  //showMoves();
-	  //determineEndGame(); //check endGame after printing scores
-
+	//Try to place a piece in the given x,y coordinate
+	public void placePieceTry(double x, double y) {
+		System.out.println("tryPlacePeice()*******************************");
 		this.score++;
 		//Update the SimpleIntegerProperty scoreProperty when you update the int score so that the TextField tf_score in the GoControlPanel updates automatically
 		this.scoreProperty.setValue(this.score);
+		// Determine which cell the current player has clicked on
+		final int cellx = (int) (x / this.getGoBoard().getCell_width());
+		final int celly = (int) (y / this.getGoBoard().getCell_height());
+
+		// if the game is not in play exit method
+		System.out.println("in_play:"+in_play);
+		if(!in_play)
+			return;
+
+		// if piece is not empty exit method
+		if(goBoard.getRender()[cellx][celly].getPlayer() != 0)
+			return;
+		
+		// Attempt to capture 
+		this.capture(this.playerCurrent,cellx, celly);
+
+		// Test to is if it is KO
+		if(isKO()){
+			// you might want to prevent the move or make the move and rewind the board history
+			return;
+		}
+
+		// Test to see if placing a piece here results in its group having no liberty
+		if(isSuicide(cellx, celly)){
+			// you might want to prevent the move or make the move and rewind the board history
+			return;
+		}
+
+		// Default case - place the piece
+		this.placePiece(cellx, celly);
+
+		// if we get to this point then a successful move has been made so swap the
+		// players and update the scores
+		swapPlayers();
+		boardSave();
+		updateScores(); // NB captureAndIncrement() will update some of the score values
+		determineEndGame();
+
+		// Print out information on game status
 	}
+
+	// Places a piece 
+	private void placePiece(final int x, final int y) {
+		goBoard.getRender()[x][y].setPlayer(playerCurrent);  
+		//if the cell is empty update the relevant render
+	}
+
+	// private method for swapping the players
+	private void swapPlayers() {
+		// swap the players
+		 int temp = playerCurrent;
+		 playerCurrent = playerOpposing;
+		 playerOpposing = temp;
+		  
+		//this.playerProperty.setValue(playerCurrent);
+	} 
+
+
+// ************ KO FUNCTIONS  ************************************	
+
+	// Method which returns true if current board is equal to the board 
+	// the last time it was this players turn 
+	private boolean isKO() {
+		// If there are enough boards in the history
+
+		// Printout the current board
+
+		// Printout the old board 
+
+		// Compare the old board to the new board and return true if they match
+
+		// If the move is not allowed make sure to undo the move 
+
+		return false; 
+	}
+
+	// Saves a copy of the board in board history 
+	private void boardSave(){
+
+		Piece[][] render; // something missing on this line
+		Piece[][] copy = new Piece[7][7];
+		//make a deep copy of the render array using a for loop
+
+		// add the copy to the board history, 
+		// you have have the current board in the board history if you want but 
+		// make sure you know what index it is in.
+	}
+
+	// Reverts to previous board
+	public void undo() {
+		// Revert to a previous board
+
+		// If you disconnect the render from the board you will have to remove 
+		// old pieces and add the new pieces again
+
+		// Change some game variables if required
+	}
+
+// ************ CAPTURE FUNCTIONS  ************************************	
+
+	// Attempts to capture neighbouring opponent groups 
+	private boolean capture(int player, int x, int y) {
+		// Place the piece
+
+		// Call captureAndIncrementScore in all for 4 directions provided there is a 
+		// opposing piece there. 
+
+		// If you didn't capture reset the piece. 
+
+		return false; 
+	}
+
+	// Attempt to capture a group in this direction and update the scores
+	private void captureAndIncrementScore(boolean captured, int x, int y){
+
+		// Make a PiecesString starting with the opponents piece
+
+		// Call piecesStringAddNeighbours() to add all the neighbouring opponent pieces  
+
+		// If the piecesString has no liberties capture it and update scores
+
+	}
+
+	// The most important function 
+	// Add the neighbours of the same player to the PiecesString
+	public void piecesStringAddNeighbours(int x, int y, PiecesString piecesString){
+
+		// Attempt to add non empty neighbours of the same player type 
+		// to the PiecesString in all 4 directions
+
+	}
+
+
+// ************ SUICIDE FUNCTIONS  ************************************	
+
+	// Place a piece of this player in position x , y. If it is part of a group
+	// with no liberties then this is a suicide move.
+	private boolean isSuicide(int x, int y) {
+		// Place a piece of this player in x , y 
+
+		// Find out if it is part of a group with no liberties by calling piecesStringHasLiberty()
+
+		// make sure to reset the piece if it is a suicide move
+
+		return false; 
+	}
+
+	// NB this function also uses piecesStringAddNeighbours() in 
+	// the above section
+	public boolean piecesStringHasLiberty(int player, int x, int y){
+		// Place piece of this player
+
+		// Create a PiecesString starting with this piece
+
+		// Repeatedly call piecesStringAddNeighbours() to make its group
+
+		// return if it has liberties or not
+
+		return false; 
+	}
+
+// ************ PRETTY PRINT FUNCTION  ************************************
+
+	// Return Renders(board history) as a String
+	public String rendersToString(){
+		StringBuffer sb = new StringBuffer(); 
+		for(int i = 0 ; i<this.renders.size(); i++){
+			sb.append("\nRenders ").append(i).append(renders.get(i)).append("\n");
+			sb.append(GoBoard.renderToString(renders.get(i)));
+		}
+		return sb.toString();
+	}
+
+// ************ BINDING FUNCTIONS   ************************************	
 
 	// This method is called when binding the SimpleIntegerProperty scoreProperty in this class to the TextField tf_score in controlPanel
 	public IntegerProperty getScore() {
 		return scoreProperty;
 	}
-	
-	// private method for placing a piece and reversing pieces
-	public void placeAndReverse(final int x, final int y) {
-		//place		
-		System.out.println(x + " , " + y);
 
-		
-		
-//		//reverse
-//		for(int i=0; i<can_reverse.length; i++) {
-//			for(int j=0; j<can_reverse[i].length; j++) {
-//				if(can_reverse[i][j]) reverseChain(x, y, j-1, i-1);
-//			}
-//		}	
+	public IntegerProperty getCurrentPlayer() {
+		return this.currentPlayerProperty;
 	}
-	
-	// private method that will initialise everything in the render array
-	
-				
-	// private method to determine if a player has a move available + SHOW VIABLE MOVES IN GREY
+
+// ************ ADVANCED FUNCTIONS  ************************************	
+	// private method to allow players to pass
+	public void pass(){
+		/// do some work
+
+		// see if the game is done
+		this.determineEndGame();
+	}
+
+	// Updates the player's scores
+	private void updateScores() {
+		// update the score, if you are doing the integerProperty binding you might do it here.
+		// but is is best up update the 
+	}
+
+	// Determines if the end of the game has been reached
+	private void determineEndGame() {
+		/// have each of the players passed in succession
+
+		determineWinner();
+	}
+
+	// Private method to determine if a player has a moves available 
+	// (advanced so returns true by default)
 	private boolean canMove() {
-		boolean canmove = true;
-
-		/*for(int i=0; i<render.length; i++) {
-	        for(int j=0; j<render[i].length; j++) {
-	            if(render[i][j].getPiece() == 0) { // is empty space?
-    			render[i][j].setPiece(0); //reset previous pieces
-    			determineSurrounding(i, j); 
-        		if(adjacentOpposingPiece() && determineReverse(i,j)) { //has adjacent and viable reverse?
-        			//render[i][j].setPiece(3); //set empty spaces that are viable moves to grey
-            			canmove = true;
-            		}
-	            }
-	        }
-	    }*/
-		return canmove;
+		return true;
 	}
-	
+
+	// private method that determines who won the game
+	private void determineWinner() {
+		// what is the prisoner score
+
+		// what is the territory score (advanced) 
+
+		// update the variables
+
+		// show who the winner is
+	}
 
 
 }
-
-/*
-
-//private method for swapping the players
-			private void swapPlayers() {
-				  int temp = current_player;
-				  current_player = opposing;
-				  opposing = temp;
-			}
-			
-			// private method for updating the player scores
-			private void updateScores() {
-				player1_score = 0;
-				player2_score = 0;
-				for(int i = 0; i<render.length; i++) {
-					for(int j = 0; j<render[i].length; j++) {
-						if(render[i][j].getPiece() == 1) player1_score++; //add to p1score
-						else if(render[i][j].getPiece() == 2) player2_score++; //add to p2score
-					}
-				}
-			}
-
-			
-			
-			// private method for determining which pieces surround x,y will update the
-			// surrounding array to reflect this
-			private void determineSurrounding(final int x, final int y) {
-				for(int i=0; i<surrounding.length; i++) {
-			        for(int j=0; j<surrounding[i].length; j++) {
-			            surrounding[i][j] = getPiece(x-(i-1), y-(j-1)); 
-			        }
-			    }
-				// surrounding array
-				// (x-1, y-1  | x, y-1 | x+1, y-1)
-				// (x-1, y    | x, y   | x+1, y)
-				// (x-1, y+1  | x, y+1 | x+1, y+1) 
-				// x -> Columns, y -> Rows
-										
-
-			}
-			
-			// private method for determining if a reverse can be made will update the can_reverse
-			// array to reflect the answers will return true if a single reverse is found
-			private boolean determineReverse(final int x, final int y) {
-				boolean checkrev = false;
-			
-				for(int i=0; i<can_reverse.length; i++) {
-			        for(int j=0; j<can_reverse[i].length; j++) {
-			        		can_reverse[i][j] = isReverseChain(x, y, (j-1), (i-1), current_player);
-			        		if(can_reverse[i][j]) checkrev = true;
-			        }
-			    }
-				// Directions
-				// UPLEFT, UP, UPRIGHT   (x-1, y-1) | (x, y-1) | (x+1, y-1)       //COLUMN, ROW
-				// LEFT, RIGHT           (x-1, y)   | PIECE    | (x+1, y)
-				// DOWNLEFT, DOWN, RIGHT (x-1, y+1) | (x, y+1) | (x+1, y+1)
-
-				return checkrev; 
-			}
-			
-			// private method for determining if a reverse can be made from a position (x,y) for
-			// a player piece in the given direction (dx,dy) returns true if possible
-			// assumes that the first piece has already been checked
-			private boolean isReverseChain(final int x, final int y, final int dx, final int dy, final int player) {
-				int cx = x; 
-				int cy = y; 
-				boolean check1 = true; //boolean, while the next piece is an opposing piece
-				int count = 0;
-				
-				while(check1) {
-					if(getPiece(cx+dx, cy+dy) != opposing) check1 = false;
-					else {
-						cx = cx+dx; cy = cy+dy;
-						count++;
-					}
-				}
-				
-				if(count>0 && getPiece(cx+dx, cy+dy) == current_player) {
-					//System.out.println("Holy crap it worked");
-					return true;
-				}
-				return false;
-			}
-			
-			// private method for determining if any of the surrounding pieces are an opposing
-			// piece. if a single one exists then return true otherwise false
-			private boolean adjacentOpposingPiece() {
-//				//hardcode - Pieces at top, bottom, left and right only
-//				if(surrounding[0][1] == opposing) return true; 
-//				else if(surrounding[1][0] == opposing) return true;
-//				else if(surrounding[1][2] == opposing) return true;
-//				else if(surrounding[2][1] == opposing) return true;
-//				
-				//check all surrounding pieces (inc diagonal)
-				for(int i = 0; i<surrounding.length; i++) {
-					for(int j = 0; j<surrounding[i].length; j++) {
-						if(surrounding[i][j] == opposing) return true;
-					}
-				}
-				return false;
-			}
-			
-		
-			
-			// private method to reverse a chain
-			private void reverseChain(final int x, final int y, final int dx, final int dy) {
-				int currx = x;
-				int curry = y;
-				boolean gonext = true; // while the next piece is an opposing piece, keep going
-
-				while(gonext) {
-					if(getPiece(currx+dx, curry+dy) != opposing) gonext = false;
-					else {
-						render[currx+dx][curry+dy].swapPiece();
-						//render[currx+dx][curry+dy] = new ReversiPiece(current_player); // test
-						//getChildren().add(render[currx+dx][curry+dy]); //test
-						currx = currx+dx; curry = curry+dy;
-					}
-				}
-				
-				if(getPiece(currx+dx, curry+dy) == current_player) {
-					return;
-				}
-			}
-			
-			// private method for getting a piece on the board. this will return the board
-			// value unless we access an index that doesnt exist. this is to make the code
-			// for determing reverse chains much easier
-			private int getPiece(final int x, final int y) {
-				if(x <6 && x >=0 && y >= 0 && y<6) {
-					return render[x][y].getPiece();
-				}
-				return -1;
-			}
-			
-			// private method that will determine if the end of the game has been reached
-			private void determineEndGame() {
-				//no empty cells on board
-				int emptycells = 0;
-				for(int i=0; i<render.length; i++) {
-			        for(int j=0; j<render[i].length; j++) {
-			        		if(render[i][j].getPiece() == 0) emptycells++; //count empty spaces
-			        }
-			    }
-				if (emptycells == 0) {
-					System.out.println("   No more empty spaces.");
-					System.out.println();
-					System.out.println("   *********** GAME OVER ***************");
-					determineWinner();
-					in_play = false;
-				}
-				//player has lost all pieces
-				else if(player1_score == 0 || player2_score == 0) {
-					System.out.println("   *********** GAME OVER ***************");
-					determineWinner();
-					in_play = false;
-				}
-				//player cannot make move
-				else if(!canMove()) { //current player can't move
-					System.out.println("No moves for Player " + current_player);
-					swapPlayers();
-					if(!canMove()) { //both players cannot make move
-						System.out.println("   No possible moves for both players.");
-						System.out.println();
-						System.out.println("   *********** GAME OVER ***************");
-						determineWinner();
-						in_play = false;
-					}
-				}
-			}*/
-			
-		
-			
-			/*
-			// private method that determines who won the game
-			private void determineWinner() {
-				 //glow for label
-			      Glow glow = new Glow(); 
-			      glow.setLevel(0.9);
-			      winnerLabel.setEffect(glow); 
-
-				if(player1_score > player2_score) { 
-					System.out.println("    ---- White WINS! ----"); 
-					winnerLabel.setText("  ** White Wins! **");
-					}
-				else if(player1_score < player2_score) { 
-					System.out.println("    ---- Black WINS! ----");
-					winnerLabel.setText("  ** Black Wins! **");
-				}
-				else { 
-					System.out.println("    ----  DRAW  ----");
-					winnerLabel.setText("  ** DRAW **");		
-				}
-				getChildren().add(winnerLabel);
-			}	
-
-			
-		}
-
-*/

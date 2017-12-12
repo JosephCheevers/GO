@@ -1,5 +1,7 @@
-package gogame;
+package _2017._09._assignments.projectgo.template.v2;
 
+import _2017._09._assignments.projectgo.template.v2.GoGameLogic;
+import _2017._09._assignments.projectgo.template.v2.Piece;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -25,19 +27,17 @@ public class GoBoard extends Pane{
 	public double cell_width;
 	public double cell_height;
 
-	private GoPiece[][] render;
-
+	private Piece[][] render;
 
 	//Label for displaying winners
 	Label winnerLabel = new Label();
 	
 	static int change = 0; // int for background changes
-	
+		
 	public GoBoard() {
 		super();
 		this.getChildren().add(new Label("The Board"));	
 	
-			
 		// allocate memory for arrays
 		//variable for board size
 		int boardsize = 7;
@@ -47,17 +47,41 @@ public class GoBoard extends Pane{
 		horizontal_t = new Translate[boardsize];
 		vertical_t = new Translate[boardsize];
 		
-		render = new GoPiece[7][7];
-		
-
+		render = new Piece[7][7];
 		
 		// call methods for initialising lines & background, render and resetting game
 		this.initialiseLinesBackground();
 		initialiseRender();
+		
 		//this.initialiseRender();
 		//this.resetGame();
 		//this.canMove();
 	}
+	
+	public static String renderToString(Piece [][] render){
+		int player [][] = new int[render.length][render[0].length];
+		for(int i=0; i< render.length; i++){
+			for (int j=0; j< render[0].length; j++){
+				player[i][j] = render[i][j].getPlayer();
+			}
+		}
+		String renderToString = Utils.twoDArrayToString(player);
+		return renderToString;
+	}
+	
+	public Piece [][]getRender(){
+		return render;
+	}
+
+	public double getCell_width() {
+		// TODO Auto-generated method stub
+		return cell_width;
+	}
+
+	public double getCell_height() {
+		// TODO Auto-generated method stub
+		return cell_height;
+	}	
 
 		// overridden version of the resize method to give the board the correct size
 	@Override
@@ -110,7 +134,6 @@ public class GoBoard extends Pane{
 			horizontal[i].setEffect(shadow1); //add shadow
 			
 			horizontal_t[i] = new Translate(0, 0);
-
 			horizontal[i].getTransforms().add(horizontal_t[i]);
 
 			this.getChildren().add(horizontal[i]); // add to board
@@ -147,37 +170,37 @@ public class GoBoard extends Pane{
 		}	
 	}
 	
-	public void placePiece(final int x, final int y) {
+	/*public void placePiece(final int x, final int y) {
 		// Step 28
 		System.out.println(x + "," + y);
 		
-		render[x][y].setPiece(1);// = new GoPiece(1);
-		System.out.println("Board");
-		System.out.println(render[x][y]);
+		render[x][y].setPlayer(goGameLogic.getCurrentPlayer());  
 		
+		//System.out.println("Board");
+		//System.out.println(render[x][y]);
 		//getChildren().add(render[x][y]);
 			
-	}
+	}*/
 	
 	private void initialiseRender() {
 		//create render objects in render array and construct with value of 0 for empty space
 		// 8x8 2d array of pieces
 		for(int i=0; i<render.length; i++) {
 	        for(int j=0; j<render[i].length; j++) {
-	            render[i][j] = new GoPiece(0);
+	            render[i][j] = new Piece(0,i,j); // Add current player Here !
 	            getChildren().add(render[i][j]);
 	        }
 	    }
 	}
 	
 	// private method that will reset the renders
-	private void resetRenders() {
+	public void resetRenders() {
 		//call setPiece() method of each render object with a value of 0
 		for(int i=0; i<render.length; i++) {
 	        for(int j=0; j<render[i].length; j++) {
 	            //render[i][j].setPiece(0); // doesn't change actual value of piece
 	        	getChildren().remove(render[i][j]); //remove previous piece
-	            render[i][j] = new GoPiece(0); // reset to 0
+	            render[i][j] = new Piece(0,i,j); // reset to 0
 	            getChildren().add(render[i][j]);
 	        }
 	    }
@@ -188,7 +211,7 @@ public class GoBoard extends Pane{
 		for(int i=0; i<render.length; i++) {
 	        for(int j=0; j<render[i].length; j++) {
 	           render[i][j].resize(cell_width, cell_height);
-	            render[i][j].relocate((cell_width*i + cell_width/4), cell_height*j + cell_height/4); 
+	            render[i][j].relocate((cell_width*i + cell_width/4), cell_height*j + cell_height/4); // edit piece size here
 	            // cellwidth & cellheight /4 because smaller pieces(pieces are /4)
 	        }
 	    }
