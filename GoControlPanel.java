@@ -10,12 +10,14 @@ package _2017._09._assignments.projectgo.template.v2;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -38,6 +40,7 @@ public class GoControlPanel extends Pane{
 
 	private VBox vb; 
 	private HBox prisonBox, scoreBox, playerBox;
+	static Ellipse gp  = new Ellipse();
 	
 	public GoControlPanel(GoGameLogic goGameLogic) {
 		super();
@@ -68,25 +71,33 @@ public class GoControlPanel extends Pane{
 //		GoPiece gp = new GoPiece(1);
 //		gp = goGameLogic.getGoPiece();
 		
-		Ellipse gp = new Ellipse();
 		//gp = goGameLogic.getEllipse();
 		gp.setCenterX(200); gp.setCenterY(200);
 		gp.setRadiusX(30); gp.setRadiusY(30);
-		//gp.setStyle("-fx-background-color: YELLOW");
-		gp.setFill(Color.WHITE);
 		
+		//gp.setStyle("-fx-background-color: YELLOW");
+		
+		DropShadow ds = new DropShadow();
+        ds.setOffsetY(3.0);
+        ds.setOffsetX(3.0);
+        ds.setColor(Color.GRAY);
+        
+        gp.setEffect(ds);
+		stoneColour(2);
+
 		change_board_button.setOnAction(event -> {
-	            //root.setEffect(null);
-	            GoBoard.changeBackground();
-		     });
+            //root.setEffect(null);
+            GoBoard.changeBackground();
+	     });
 		reset_button.setOnAction(event -> {
-          //root.setEffect(null);
-          goGameLogic.resetGame();
+	          //root.setEffect(null);
+			stoneColour(2);
+	          goGameLogic.resetGame();
 	     });
 		
 		skip_button.setOnAction(event -> {
           //root.setEffect(null);
-         // goGameLogic.swapPlayers();
+			//goGameLogic.swapPlayers();
 	     });
 		
 		menu_button.setOnAction(event -> {
@@ -136,7 +147,16 @@ public class GoControlPanel extends Pane{
 		//System.out.println("TEST PIECE" + gp);
 
 	}	
-  public void popUpPause() {
+	
+	public static void stoneColour(int i) {
+		if(i == 1)
+			gp.setFill(Color.WHITE);
+		else
+			gp.setFill(Color.BLACK);	
+	}
+	
+	
+	public void popUpPause() {
 		 //root.setEffect(new GaussianBlur());
 	
 		 Pane pauseRoot = new Pane ();
