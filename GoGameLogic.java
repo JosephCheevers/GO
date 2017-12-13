@@ -134,6 +134,7 @@ public class GoGameLogic {
 		 playerCurrent = playerOpposing;
 		 playerOpposing = temp;
 		  
+		 GoControlPanel.stoneColour(playerCurrent);
 		//this.playerProperty.setValue(playerCurrent);
 	} 
 
