@@ -1,4 +1,4 @@
-package gogame;
+package _2017._09._assignments.projectgo.template.v2;
 
 import javafx.scene.control.SkinBase;
 

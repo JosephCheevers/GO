@@ -1,4 +1,4 @@
-package gogame;
+package _2017._09._assignments.projectgo.template.v2;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.Control;
@@ -15,7 +15,7 @@ class GoCustomControl extends Control {
 		setSkin(new GoCustomControlSkin(this));
 		this.goGameLogic = goGameLogic;
 		this.setStyle("-fx-background-color: yellow;");
-		getChildren().add(goGameLogic.getBoard());
+		getChildren().add(goGameLogic.getGoBoard());
 
 		// add a mouse clicked listener that will try to place a piece on
 		// the Go board
@@ -23,7 +23,7 @@ class GoCustomControl extends Control {
 			// overridden method to handle a mouse event
 			@Override
 			public void handle(MouseEvent event) {
-				goGameLogic.placePiece(event.getX(), event.getY());
+				goGameLogic.placePieceTry(event.getX(), event.getY());
 				
 			}
 		});
@@ -46,11 +46,11 @@ class GoCustomControl extends Control {
 	public void resize(double width, double height) {
 		// call the super class method and resize the board
 		super.resize(width, height);
-		goGameLogic.getBoard().resize(width, height);
+		goGameLogic.getGoBoard().resize(width, height);
 	}
 
 	public GoBoard getBoard(){
-		return this.goGameLogic.getBoard();
+		return this.goGameLogic.getGoBoard();
 	}
 	
 	GoGameLogic goGameLogic;

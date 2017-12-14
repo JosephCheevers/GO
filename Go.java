@@ -1,4 +1,4 @@
-package gogame;
+package _2017._09._assignments.projectgo.template.v2;
 
 //imports
 import javafx.application.Application;
@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 //class defnition f
 public class Go extends Application {
 	
+	// private fields 
 	private BorderPane bp_layout;
 	private GoCustomControl customControl;
 	private GoControlPanel controlPanel;
@@ -22,7 +23,6 @@ public class Go extends Application {
 		gameLogic = new GoGameLogic(board); 	        // create gameLogic and pass board to gameLogic so gameLogic can call methods from board
 		customControl = new GoCustomControl(gameLogic); // create customControl and pass gameLogic to customControl so customControl can call methods from gameLogic
 		controlPanel = new GoControlPanel(gameLogic);   // create controlPanel and pass gameLogic to controlPanel so customControl can call methods from gameLogic
-		
 		bp_layout.setCenter(customControl);				// put the customControl in the center of the layout
 		bp_layout.setLeft(controlPanel);				// put the controlPanel in the right of the layout
 	}
@@ -45,36 +45,8 @@ public class Go extends Application {
 		//T1
 		launch(args);
 	}
-
-	/* private fields 
-	
-	
-	public void popUpPause() {// ,BorderPane root) {
-	   	 //root.setEffect(new GaussianBlur());
-
-	        HBox pauseRoot = new HBox(50);
-	        pauseRoot.getChildren().add(new Label("Paused"));
-	        pauseRoot.setStyle("-fx-background-color: rgba(255, 255, 255, 0.8);");
-	        pauseRoot.setAlignment(Pos.CENTER);
-	        pauseRoot.setPadding(new Insets(20));
-
-	        Button resume = new Button("Resume");
-	        pauseRoot.getChildren().add(resume);
-
-	        Stage popupStage = new Stage(StageStyle.TRANSPARENT);
-	        //popupStage.initOwner(primaryStage);
-	        popupStage.initModality(Modality.APPLICATION_MODAL);
-	        popupStage.setScene(new Scene(pauseRoot, Color.TRANSPARENT));
-
-	        resume.setOnAction(event -> {
-	            //root.setEffect(null);
-	            popupStage.hide();
-	        });
-
-	        popupStage.show();
-	   }*/
-
 }
+
 
 
 
