@@ -98,13 +98,13 @@ public class GoGameLogic {
 
 		
 		// Attempt to capture 
-		//this.capture(this.playerCurrent,cellx, celly);
+		this.capture(this.playerCurrent,cellx, celly);
 		
 		piecesStringAddNeighbours(cellx,celly,ps);
 
 		
-		System.out.println();
-		System.out.println("TESTING1: " + ps);
+//		System.out.println();
+//		System.out.println("TESTING1: " + ps);
 
 		// Test to is if it is KO
 		if(isKO()){
@@ -193,41 +193,80 @@ public class GoGameLogic {
 
 	// Attempts to capture neighbouring opponent groups 
 	private boolean capture(int player, int x, int y) {
-		// Place the piece
-		//this.placePiece(x,y);
-		
+		boolean captured = false;
+//		// Place the piece
+//		//this.placePiece(x,y);
+//		
+//		System.out.println("FUCK: " + x + "," + y);
+//		
+//
+//		// Call captureAndIncrementScore in all for 4 directions provided there is a 
+//		// opposing piece there. 
+//		//Piece currPiece = goBoard.getRender()[x][y];
+////		if(x>=0 && x<7 && y>=0 && y<7) {
+//			System.out.println("capture GONE IN");
+//			
+//			
+//			// not working
+//			//UP
+//			if (x>=0 && x<7 && y-1>=0 && y-1<7 && goBoard.getRender()[x][y-1].getPlayer() == playerOpposing) { //breaks
+//				System.out.println("Capture: UP");
+//				captureAndIncrementScore(captured, x, y-1);
+//			}
+//			
+//			//RIGHT
+//			if (x+1>=0 && x+1<7 && y>=0 && y<7 && goBoard.getRender()[x+1][y].getPlayer() == playerOpposing) {
+//				System.out.println("Capture: RIGHT");
+//				captureAndIncrementScore(captured, x+1, y);
+//			}
+//			
+//			//DOWN
+//			if (x>=0 && x<7 && y+1>=0 && y+1<7 && goBoard.getRender()[x][y+1].getPlayer() == playerOpposing) {
+//				System.out.println("Capture: DWN");
+//				captureAndIncrementScore(captured, x, y+1);
+//			}
+//			
+//			//LEFT
+//			if (x-1>=0 && x-1<7 && y>=0 && y<7 && goBoard.getRender()[x-1][y].getPlayer() == playerOpposing) {
+//				System.out.println("Capture: LFT");
+//				captureAndIncrementScore(captured, x-1, y);
+//			}
+		//}
 
-		// Call captureAndIncrementScore in all for 4 directions provided there is a 
-		// opposing piece there. 
-		//Piece currPiece = goBoard.getRender()[x][y];
-		if (capture(playerCurrent,x, y-1)) {
-			//captureAndIncrementScore();
-		}
-		//captureAndIncrementScore() ;
+
 
 		// If you didn't capture reset the piece. 
 
-		return false; 
+		return captured; 
 	}
 
 	// Attempt to capture a group in this direction and update the scores
 	private void captureAndIncrementScore(boolean captured, int x, int y){
-
-		// Make a PiecesString starting with the opponents piece
-		PiecesString capturePieces = new PiecesString(playerOpposing);
-
-		// Call piecesStringAddNeighbours() to add all the neighbouring opponent pieces  
-		piecesStringAddNeighbours(x, y, capturePieces);
-
-		// If the piecesString has no liberties capture it and update scores
-		if (!capturePieces.hasLiberty()) {
-			//capture
-			for(int i = 0; i < capturePieces.size(); i++) {
-				capture(playerOpposing, capturePieces.get(i).getX(), capturePieces.get(i).getY());
-				//update score
-				updateScores();
-			}
-		}
+//		if(captured == true) return;
+//		// Make a PiecesString starting with the opponents piece
+//		PiecesString capturePieces = new PiecesString(playerOpposing);
+//
+//		// Call piecesStringAddNeighbours() to add all the neighbouring opponent pieces  
+//		piecesStringAddNeighbours(x, y, capturePieces);
+//		System.out.println("CAPTINCREM METHOD");
+//
+//		// If the piecesString has no liberties capture it and update scores
+//		if (!capturePieces.hasLiberty()) {
+//			System.out.println("NO LIBERTY");
+//			//capture
+//			for(int i = 0; i < capturePieces.size(); i++) {
+//				//capture(playerOpposing, capturePieces.get(i).getX(), capturePieces.get(i).getY());
+//				System.out.println("Went into loop. Should reset piece");
+//				goBoard.getRender()[capturePieces.get(i).getX()][capturePieces.get(i).getY()].setPlayer(0);
+//				System.out.println("Piece in capturepieces: " + capturePieces.get(i));
+//				System.out.println("Piece captured.");
+//				//update score
+//				updateScores();
+//				//captured = true;
+//			}
+//			System.out.println("Skipped loop.");
+//			System.out.println("list is: " + capturePieces);
+//		}
 	}
 
 	// The most important function 
@@ -250,30 +289,31 @@ public class GoGameLogic {
 			//Piece currentPiece = ps.get(i);
 			//System.out.println("test2" + goBoard.getRender()[x][y]);
 		// UP	
-		if (goBoard.getPiece(x, y-1) != -1) {
+		if (goBoard.getPiecePlayer(x, y-1) != -1) {
 				ps.add(goBoard.getRender()[x][y-1]);
 				currPiece = goBoard.getRender()[x][y-1];
-				System.out.println("test - up");
+				//piecesStringAddNeighbours(currPiece.getX(), currPiece.getY(), piecesString);
+				//System.out.println("test - up");
 		}
 		// RIGHT
-		if (goBoard.getPiece(x+1, y) != -1) {
+		if (goBoard.getPiecePlayer(x+1, y) != -1) {
 			ps.add(goBoard.getRender()[x+1][y]);
 			currPiece = goBoard.getRender()[x+1][y];
-			System.out.println("test - right");
+			//System.out.println("test - right");
 		}
 		
 		// DOWN
-		if (goBoard.getPiece(x, y+1) != -1) {
+		if (goBoard.getPiecePlayer(x, y+1) != -1) {
 			ps.add(goBoard.getRender()[x][y+1]);
 			currPiece = goBoard.getRender()[x][y+1];
-			System.out.println("test - down");
+			//System.out.println("test - down");
 		}
 		
 		//LEFT
-		if (goBoard.getPiece(x-1, y) != -1) {
+		if (goBoard.getPiecePlayer(x-1, y) != -1) {
 			ps.add(goBoard.getRender()[x-1][y]);
 			currPiece = goBoard.getRender()[x-1][y];
-			System.out.println("test - left");
+			//System.out.println("test - left");
 		}
 
 			
@@ -299,26 +339,41 @@ public class GoGameLogic {
 	// with no liberties then this is a suicide move.
 	private boolean isSuicide(int x, int y) {
 		// Place a piece of this player in x , y 
+		goBoard.setPiece(x, y, playerCurrent);
+		
+		System.out.println("Suicide check 1");
 
 		// Find out if it is part of a group with no liberties by calling piecesStringHasLiberty()
-
+		boolean isNotSuicide = piecesStringHasLiberty(playerCurrent, x, y);
+		
+		System.out.println("isNotSuicide: " + isNotSuicide);
 		// make sure to reset the piece if it is a suicide move
+		if (isNotSuicide = false) goBoard.setPiece(x, y, 0); // this not working
 
-		return false; 
+		return isNotSuicide; 
 	}
 
 	// NB this function also uses piecesStringAddNeighbours() in 
 	// the above section
 	public boolean piecesStringHasLiberty(int player, int x, int y){
 		// Place piece of this player
-
+		//goBoard.setPiece(x, y, player);//put stuff
+		
+		Piece currentPiece;//.getpiece from board class //get player?
+		
+		currentPiece = goBoard.getPiece(x, y);
+			
 		// Create a PiecesString starting with this piece
-
+		PiecesString ps = new PiecesString(playerCurrent); // set color with this piece
+		ps.add(currentPiece);
+		
 		// Repeatedly call piecesStringAddNeighbours() to make its group
-
+		//for loop i < size
+		for (int i = 0; i < ps.size(); i++) {
+			piecesStringAddNeighbours(currentPiece.getX(), currentPiece.getY(), ps); 
+		}
 		// return if it has liberties or not
-
-		return false; 
+		return ps.hasLiberty();
 	}
 
 // ************ PRETTY PRINT FUNCTION  ************************************

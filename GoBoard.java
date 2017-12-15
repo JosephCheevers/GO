@@ -36,7 +36,7 @@ public class GoBoard extends Pane{
 		
 	public GoBoard() {
 		super();
-		this.getChildren().add(new Label("The Board"));	
+		this.getChildren().add(new Label("The Board"));	 
 	
 		// allocate memory for arrays
 		//variable for board size
@@ -243,7 +243,16 @@ public class GoBoard extends Pane{
 		//System.out.println("Change: " + change); //test
 	}
 	
-	public int getPiece(int x, int y) {
+	public int getPiecePlayer(int x, int y) {
+		if (x <0 || y <0 || x>6 || y >6) return -1; 
 		return render[x][y].getPlayer();
+	}
+	
+	public Piece getPiece(int x, int y) {
+		return render[x][y];
+	}
+	
+	public void setPiece(int x, int y, int player) {
+		render[x][y].setPlayer(player);
 	}
 }
