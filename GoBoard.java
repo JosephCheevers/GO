@@ -1,5 +1,7 @@
-package gogame;
+package _2017._09._assignments.projectgo.template.v2;
 
+import _2017._09._assignments.projectgo.template.v2.GoGameLogic;
+import _2017._09._assignments.projectgo.template.v2.Piece;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -11,7 +13,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Translate;
 
 public class GoBoard extends Pane{
-		
+	
 	// rectangle that makes the background of the board
 	public static Rectangle background;
 	// arrays for the lines that makeup the horizontal and vertical grid lines
@@ -25,26 +27,16 @@ public class GoBoard extends Pane{
 	public double cell_width;
 	public double cell_height;
 
-	private GoPiece[][] render;
+	private Piece[][] render;
 
 	//Label for displaying winners
 	Label winnerLabel = new Label();
 	
 	static int change = 0; // int for background changes
-	
-	//====================== New Stuff ========================
-
-	public void setRenderPos( final int x , final int y) {
-		 render[x][y].setPiece(0);
-	}
-	
-	public int getRenderPos( final int x , final int y) {
-		return render[x][y].getPiece();
-	}
-	//=========================================================
+		
 	public GoBoard() {
 		super();
-		this.getChildren().add(new Label("The Board"));	
+		this.getChildren().add(new Label("The Board"));	 
 	
 		// allocate memory for arrays
 		//variable for board size
@@ -55,7 +47,7 @@ public class GoBoard extends Pane{
 		horizontal_t = new Translate[boardsize];
 		vertical_t = new Translate[boardsize];
 		
-		render = new GoPiece[7][7];
+		render = new Piece[7][7];
 		
 		// call methods for initialising lines & background, render and resetting game
 		this.initialiseLinesBackground();
@@ -65,6 +57,31 @@ public class GoBoard extends Pane{
 		//this.resetGame();
 		//this.canMove();
 	}
+	
+	public static String renderToString(Piece [][] render){
+		int player [][] = new int[render.length][render[0].length];
+		for(int i=0; i< render.length; i++){
+			for (int j=0; j< render[0].length; j++){
+				player[i][j] = render[i][j].getPlayer();
+			}
+		}
+		String renderToString = Utils.twoDArrayToString(player);
+		return renderToString;
+	}
+	
+	public Piece [][]getRender(){
+		return render;
+	}
+
+	public double getCell_width() {
+		// TODO Auto-generated method stub
+		return cell_width;
+	}
+
+	public double getCell_height() {
+		// TODO Auto-generated method stub
+		return cell_height;
+	}	
 
 		// overridden version of the resize method to give the board the correct size
 	@Override
@@ -153,23 +170,24 @@ public class GoBoard extends Pane{
 		}	
 	}
 	
-	public void placePiece(final int x, final int y) {
+	/*public void placePiece(final int x, final int y) {
 		// Step 28
 		System.out.println(x + "," + y);
-		render[x][y].setPiece(GoGameLogic.current_player);// = new GoPiece(1);
-		System.out.println("Board");
-		System.out.println(render[x][y]);
 		
+		render[x][y].setPlayer(goGameLogic.getCurrentPlayer());  
+		
+		//System.out.println("Board");
+		//System.out.println(render[x][y]);
 		//getChildren().add(render[x][y]);
 			
-	}
+	}*/
 	
 	private void initialiseRender() {
 		//create render objects in render array and construct with value of 0 for empty space
 		// 8x8 2d array of pieces
 		for(int i=0; i<render.length; i++) {
 	        for(int j=0; j<render[i].length; j++) {
-	            render[i][j] = new GoPiece(0);
+	            render[i][j] = new Piece(0,i,j); // Add current player Here !
 	            getChildren().add(render[i][j]);
 	        }
 	    }
@@ -182,7 +200,7 @@ public class GoBoard extends Pane{
 	        for(int j=0; j<render[i].length; j++) {
 	            //render[i][j].setPiece(0); // doesn't change actual value of piece
 	        	getChildren().remove(render[i][j]); //remove previous piece
-	            render[i][j] = new GoPiece(0); // reset to 0
+	            render[i][j] = new Piece(0,i,j); // reset to 0
 	            getChildren().add(render[i][j]);
 	        }
 	    }
@@ -224,7 +242,17 @@ public class GoBoard extends Pane{
 		}
 		//System.out.println("Change: " + change); //test
 	}
+	
+	public int getPiecePlayer(int x, int y) {
+		if (x <0 || y <0 || x>6 || y >6) return -1; 
+		return render[x][y].getPlayer();
+	}
+	
+	public Piece getPiece(int x, int y) {
+		return render[x][y];
+	}
+	
+	public void setPiece(int x, int y, int player) {
+		render[x][y].setPlayer(player);
+	}
 }
-
-
-

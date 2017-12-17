@@ -1,66 +1,36 @@
-/*package gogame;
+package _2017._09._assignments.projectgo.template.v2;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.util.converter.NumberStringConverter;
 
-public class GoControlPanel extends Pane{
-
-	private GoGameLogic goGameLogic;
-	private TextField tf_score ; 
-	private Label tf_Player; 
-
-	private VBox vb; 
-	
-	public GoControlPanel(GoGameLogic goGameLogic) {
-		super();
-		this.goGameLogic = 	goGameLogic;
-		this.tf_score = new TextField();
-		this.tf_Player = new Label("Player 1");
-		Button reset_button = new Button("Reset Game");
-		Button change_board_button = new Button("Change Board");
-		
-		//GoPiece gp = new GoPiece(1);
-		
-		change_board_button.setOnAction(event -> {
-	            //root.setEffect(null);
-	            GoBoard.changeBackground();
-		     });
-
-		// Binding the SimpleIntegerProperty scoreProperty in GoGameLogic to the TextField tf_score
-
-		this.tf_score.textProperty().bindBidirectional(this.goGameLogic.getScore(), new NumberStringConverter());
-		this.vb = new VBox();
-		this.getChildren().add(vb);
-		vb.getChildren().addAll ( new Label("Control Panel"),tf_Player, tf_score, reset_button, change_board_button);
-	}	
-}*/
-
-package gogame;
-
+//import javafx.beans.binding.Bindings;
+//import javafx.beans.property.SimpleStringProperty;
+//import javafx.beans.value.ObservableBooleanValue;
+//import javafx.beans.value.ObservableObjectValue;
 //import gogame.Hud.MenuItem;
-import javafx.event.EventHandler;
+//import javafx.event.EventHandler;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.converter.NumberStringConverter;
+//import gogame.GoPiece;
 
 public class GoControlPanel extends Pane{
 
@@ -70,6 +40,7 @@ public class GoControlPanel extends Pane{
 
 	private VBox vb; 
 	private HBox prisonBox, scoreBox, playerBox;
+	static Ellipse gp  = new Ellipse(); 
 	
 	public GoControlPanel(GoGameLogic goGameLogic) {
 		super();
@@ -94,36 +65,61 @@ public class GoControlPanel extends Pane{
 		tf_prisoners.setEditable(false);
 		tf_prisoners.setPrefWidth(50);
 		
-		GoPiece gp = new GoPiece(1);
+//		GoPiece gp = new GoPiece(1);
+//		gp.setPiece(1);
 		
+//		GoPiece gp = new GoPiece(1);
+//		gp = goGameLogic.getGoPiece();
+		
+		//gp = goGameLogic.getEllipse();
+		gp.setCenterX(200); gp.setCenterY(200);
+		gp.setRadiusX(30); gp.setRadiusY(30);
+		
+		//gp.setStyle("-fx-background-color: YELLOW");
+		
+		DropShadow ds = new DropShadow();
+        ds.setOffsetY(3.0);
+        ds.setOffsetX(3.0);
+        ds.setColor(Color.GRAY);
+        
+        gp.setEffect(ds);
+		stoneColour(1);
+
 		change_board_button.setOnAction(event -> {
-	            //root.setEffect(null);
-	            GoBoard.changeBackground();
-		     });
-		reset_button.setOnAction(event -> {
             //root.setEffect(null);
-            goGameLogic.resetGame();
+            GoBoard.changeBackground();
+	     });
+		reset_button.setOnAction(event -> {
+	          //root.setEffect(null);
+			stoneColour(2);
+	          goGameLogic.resetGame();
 	     });
 		
 		skip_button.setOnAction(event -> {
-            //root.setEffect(null);
-            goGameLogic.swapPlayers();
+          //root.setEffect(null);
+			goGameLogic.pass();
 	     });
 		
 		menu_button.setOnAction(event -> {
-            //root.setEffect(null);
-            popUpDialog();
+          //root.setEffect(null);
+          popUpDialog();
 	     });
 
 		// Binding the SimpleIntegerProperty scoreProperty in GoGameLogic to the TextField tf_score
-		this.lbl_player2.textProperty().bindBidirectional(this.goGameLogic.get_playerProperty(), new NumberStringConverter());
+		this.lbl_player2.textProperty().bindBidirectional(this.goGameLogic.getCurrentPlayer(), new NumberStringConverter());
 		this.tf_score.textProperty().bindBidirectional(this.goGameLogic.getScore(), new NumberStringConverter());
-		this.tf_prisoners.textProperty().bindBidirectional(this.goGameLogic.getPrisonersProperty(), new NumberStringConverter());
+		//this.tf_prisoners.textProperty().bindBidirectional(this.goGameLogic.getPrisonersProperty(), new NumberStringConverter());
+		//gp.fillProperty().bind(this.goGameLogic.getEllipse());
+		//gp.styleProperty().bindBidirectional(this.goGameLogic.getStyle());
 		
+		//ObservableBooleanValue booleanCondition = goGameLogic.getEllipse();
+		//final ObservableObjectValue<Paint> paintProperty = Bindings.when(booleanCondition).then(Color.RED).otherwise(Color.DODGERBLUE);
+
 		this.vb = new VBox();
 		vb.setAlignment(Pos.CENTER);
 		vb.setSpacing(15.0);
 		vb.setPrefWidth(175);
+		
 		
 		playerBox = new HBox();
 		playerBox.setAlignment(Pos.CENTER);
@@ -139,14 +135,28 @@ public class GoControlPanel extends Pane{
 		scoreBox.setAlignment(Pos.CENTER);
 		scoreBox.setSpacing(20);
 		scoreBox.getChildren().addAll(lbl_score, tf_score);
+		
+		//int curr_player = GoGameLogic.get_player();
+		//changePlayerIcon(curr_player, gp);
 
 		
 		this.getChildren().add(vb);
-		vb.getChildren().addAll (gp, new Label("Control Panel"),playerBox, scoreBox, prisonBox, reset_button, 
+		vb.getChildren().addAll (new Label("Control Panel"),playerBox, gp, scoreBox, prisonBox, reset_button, 
 				skip_button,change_board_button, menu_button);
+		
+		//System.out.println("TEST PIECE" + gp);
 
 	}	
-    public void popUpPause() {
+	
+	public static void stoneColour(int i) {
+		if(i == 1)
+			gp.setFill(Color.WHITE);
+		else
+			gp.setFill(Color.BLACK);	
+	}
+	
+	
+	public void popUpPause() {
 		 //root.setEffect(new GaussianBlur());
 	
 		 Pane pauseRoot = new Pane ();
@@ -184,9 +194,9 @@ public class GoControlPanel extends Pane{
 	         popupStage.hide();
 	     });
 	     popupStage.show();
-    }
-    
-   private void popUpDialog(){
+  }
+  
+ private void popUpDialog(){
 	   Alert rules = new Alert(AlertType.INFORMATION);
 	   rules.setTitle("GO MENU");
 	   rules.setHeaderText("The Rules of GO");
@@ -213,8 +223,20 @@ public class GoControlPanel extends Pane{
 	   rules.initModality(Modality.NONE);
 	   rules.initStyle(StageStyle.UTILITY);
 	   rules.show();
-
-	   
-    }
+  }
+ 
+ 	private void changePlayerIcon(int p, Ellipse gp) {
+		if (p == 1) {
+			gp.setFill(Color.WHITE); //visible - Player1
+		}
+		else if(p == 2) {
+			gp.setFill(Color.BLACK); //visible - Player2
+		}
+		else if(p == 0) {
+			gp.setFill(Color.TRANSPARENT); //invisible
+		}	
+		else if(p == 3) {
+			gp.setFill(Color.web("#555555", 0.2)); //set color of empty piece that is viable move to grey
+		}
+ }
 }
-
