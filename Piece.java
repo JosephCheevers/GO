@@ -34,7 +34,7 @@ class Piece extends Group {
 
 		
 	// default constructor for the class
-	public Piece(int player, int x, int y) {
+	public Piece(int player, int x, int y) { 
 		// take a copy of the player
 		this.player = player;
 		this.x = x; 

@@ -40,7 +40,7 @@ public class GoControlPanel extends Pane{
 
 	private VBox vb; 
 	private HBox prisonBox, scoreBox, playerBox;
-	static Ellipse gp  = new Ellipse();
+	static Ellipse gp  = new Ellipse(); 
 	
 	public GoControlPanel(GoGameLogic goGameLogic) {
 		super();
@@ -83,7 +83,7 @@ public class GoControlPanel extends Pane{
         ds.setColor(Color.GRAY);
         
         gp.setEffect(ds);
-		stoneColour(2);
+		stoneColour(1);
 
 		change_board_button.setOnAction(event -> {
             //root.setEffect(null);
@@ -97,7 +97,7 @@ public class GoControlPanel extends Pane{
 		
 		skip_button.setOnAction(event -> {
           //root.setEffect(null);
-			goGameLogic.swapPlayers();
+			goGameLogic.pass();
 	     });
 		
 		menu_button.setOnAction(event -> {
@@ -106,7 +106,7 @@ public class GoControlPanel extends Pane{
 	     });
 
 		// Binding the SimpleIntegerProperty scoreProperty in GoGameLogic to the TextField tf_score
-		//this.lbl_player2.textProperty().bindBidirectional(this.goGameLogic.get_playerProperty(), new NumberStringConverter());
+		this.lbl_player2.textProperty().bindBidirectional(this.goGameLogic.getCurrentPlayer(), new NumberStringConverter());
 		this.tf_score.textProperty().bindBidirectional(this.goGameLogic.getScore(), new NumberStringConverter());
 		//this.tf_prisoners.textProperty().bindBidirectional(this.goGameLogic.getPrisonersProperty(), new NumberStringConverter());
 		//gp.fillProperty().bind(this.goGameLogic.getEllipse());

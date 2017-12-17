@@ -7,7 +7,7 @@ public class PiecesString{
 	public PiecesString(int player){		
 		this.piecesString = new ArrayList<Piece>();
 		this.player = player; 
-		hasLiberty = false;  
+		this.hasLiberty = false;  
 		System.out.println("PiecesString created");
 	}
 	
@@ -17,7 +17,7 @@ public class PiecesString{
 		if(piece.getPlayer()==this.player)
 			//if not in piecesString 
 			if(!this.piecesString.contains(piece)){
-				//add piece to piecesString
+				//add piece to piecesString 
 				this.piecesString.add(piece);
 				//output added piece
 				System.out.println(piece+" added");
@@ -32,8 +32,10 @@ public class PiecesString{
 			System.out.println("group has liberty");
 			// update hasLiberty to true
 			this.hasLiberty=true;
+			System.out.println(this.hasLiberty);//test
+			
 		}
-		// else (piece opposite colour
+		// else (piece opposite colour)
 		else
 			// output piece is opposite player
 			System.out.println(piece+" is oppsite player");
@@ -56,7 +58,8 @@ public class PiecesString{
 		return this.player;
 	}
 	
-	public boolean hasLiberty() {
+	public boolean getHasLiberty() {
+		//System.out.println("Method Liberty: " + hasLiberty);
 		return this.hasLiberty;
 	} 
 	
