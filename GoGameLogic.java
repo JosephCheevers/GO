@@ -165,30 +165,39 @@ public class GoGameLogic {
 	// the last time it was this players turn 
 	private boolean isKO() {
 		// If there are enough boards in the history
-		
-		// Printout the current board
-		
-		// Printout the old board 
-		
-		// Compare the old board to the new board and return true if they match
-		
-		// If the move is not allowed make sure to undo the move 
-
+		if(renders.size() > 0) {
+			// Printout the current board
+				System.out.println(goBoard.getRender());
+			// Printout the old board 
+				System.out.println(renders.get(renderCurrent-1));
+			// Compare the old board to the new board and return true if they match
+				if(goBoard.getRender() == renders.get(renderCurrent-1))
+					return true;
+			// If the move is not allowed make sure to undo the move
+				undo();
+		}
 		return false; 
 	}
 
 	// Saves a copy of the board in board history 
 	private void boardSave(){
 
-		Piece[][] render; // something missing on this line
+		Piece[][] render = goBoard.getRender();// something missing on this line
 		Piece[][] copy = new Piece[7][7];
+		
 		//make a deep copy of the render array using a for loop
+		for(int i=0; i<render.length; i++) {
+	        for(int j=0; j<render[i].length; j++) {
+	        	copy[i][j] = render[i][j];
+        	}
+        }	    
 		
 		// add the copy to the board history, 
+		renders.add(copy);
+		renderCurrent++;
+		// you have the current board in the board history if you want but 
+		// make sure you know what index it is in
 		
-		// you have have the current board in the board history if you want but 
-		
-		// make sure you know what index it is in.
 	}
 
 	// Reverts to previous board
