@@ -167,14 +167,14 @@ public class GoGameLogic {
 		// If there are enough boards in the history
 		if(renders.size() > 0) {
 			// Printout the current board
-				System.out.println(goBoard.getRender());
+			System.out.println(goBoard.getRender());
 			// Printout the old board 
-				System.out.println(renders.get(renderCurrent-1));
+			System.out.println(renders.get(renderCurrent-1));
 			// Compare the old board to the new board and return true if they match
-				if(goBoard.getRender() == renders.get(renderCurrent-1))
-					return true;
+			if(goBoard.getRender() == renders.get(renderCurrent-1))
+				return true;
 			// If the move is not allowed make sure to undo the move
-				undo();
+			undo();
 		}
 		return false; 
 	}
