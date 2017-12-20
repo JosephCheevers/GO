@@ -72,7 +72,19 @@ public class GoBoard extends Pane{
 	public Piece [][]getRender(){
 		return render;
 	}
-
+	
+	//================= Testing =====================
+	public void setRender(Piece[][] newRender){
+		//render = newRender;
+		
+		for(int i=0; i< render.length; i++) {
+	        for(int j=0; j< render.length; j++) {
+	        	render[i][j].setPlayer(newRender[i][j].getPlayer());
+	        }
+		}
+	}
+	//===============================================
+	
 	public double getCell_width() {
 		// TODO Auto-generated method stub
 		return cell_width;

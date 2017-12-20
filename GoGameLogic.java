@@ -62,14 +62,15 @@ public class GoGameLogic {
 		scorePlayer2 = 0; 
 		passesPlayer1 = 0;
 		passesPlayer2 = 0;
-		canMove(); 
+		canMove(); 		
 		
-		//call can move to display the viable moves in grey on reset
-		
-
+		this.currentPlayerProperty.setValue(playerCurrent);
+		GoControlPanel.stoneColour(playerCurrent);
 
 		// reset renders (board history) 
 		this.renders = new ArrayList<Piece [][]>();
+		renderCurrent = 0;
+
 		// save the board in renders
 		this.boardSave();
 	}
@@ -101,8 +102,6 @@ public class GoGameLogic {
 		// if piece is not empty exit method
 		if(goBoard.getRender()[cellx][celly].getPlayer() != 0)
 			return;
-		
-
 		
 		// Attempt to capture 
 		this.capture(this.playerCurrent,cellx, celly);
@@ -155,7 +154,8 @@ public class GoGameLogic {
 		 playerOpposing = temp;
 		  
 		 GoControlPanel.stoneColour(playerCurrent);
-		this.currentPlayerProperty.setValue(playerCurrent);
+		 
+		 this.currentPlayerProperty.setValue(playerCurrent);
 	} 
 
 
@@ -165,16 +165,48 @@ public class GoGameLogic {
 	// the last time it was this players turn 
 	private boolean isKO() {
 		// If there are enough boards in the history
-		if(renders.size() > 0) {
+		if(renders.size() > 2) {
 			// Printout the current board
-			System.out.println(goBoard.getRender());
+			System.out.print("Current Board:  ");
+			
+			int arrSize = goBoard.getRender().length;
+			for(int i=0; i< arrSize ; i++) {
+		        for(int j=0; j< arrSize; j++) {
+	        		System.out.print(goBoard.getRender()[i][j].getPlayer());
+	    			System.out.print(" , ");
+		        }
+			}
+			System.out.println();
+		
 			// Printout the old board 
-			System.out.println(renders.get(renderCurrent-1));
-			// Compare the old board to the new board and return true if they match
-			if(goBoard.getRender() == renders.get(renderCurrent-1))
-				return true;
-			// If the move is not allowed make sure to undo the move
-			undo();
+			System.out.print("Previous Board: ");
+			for(int i=0; i< arrSize; i++) {
+		        for(int j=0; j< arrSize; j++) {
+	        		System.out.print(renders.get(renderCurrent-1)[i][j].getPlayer());
+	    			System.out.print(" , ");
+		        }
+			}
+			System.out.println();
+
+			// Compare the old board to the new board and return true if they match			
+			for(int i=0; i< goBoard.getRender().length; i++) {
+		        for(int j=0; j< goBoard.getRender()[i].length; j++) {
+		        	if(goBoard.getRender()[i][j].getPlayer() != renders.get(renderCurrent-2)[i][j].getPlayer()){
+		        		// If the move is not allowed make sure to undo t he move
+		        		System.out.print("[");
+		        		System.out.print(renders.get(renderCurrent-2)[i][j].getPlayer());
+		        		System.out.print(" , ");
+		        		System.out.print(goBoard.getRender()[i][j].getPlayer());
+		        		System.out.println("]");		        		
+		        		return false;
+					}
+	        	}
+	        }	 
+    		System.out.println("***");
+    		System.out.println("***");
+    		System.out.println("***");
+    		undo();
+			return true;
 		}
 		return false; 
 	}
@@ -184,13 +216,13 @@ public class GoGameLogic {
 
 		Piece[][] render = goBoard.getRender();// something missing on this line
 		Piece[][] copy = new Piece[7][7];
-		
-		//make a deep copy of the render array using a for loop
-		for(int i=0; i<render.length; i++) {
-	        for(int j=0; j<render[i].length; j++) {
-	        	copy[i][j] = render[i][j];
-        	}
-        }	    
+			
+		for(int i=0; i< render.length; i++) {
+	        for(int j=0; j< render.length; j++) {
+				copy[i][j] = new Piece(render[i][j].getPlayer(),render[i][j].getX(),render[i][j].getY()); 
+	        }
+		}
+
 		
 		// add the copy to the board history, 
 		renders.add(copy);
@@ -203,11 +235,16 @@ public class GoGameLogic {
 	// Reverts to previous board
 	public void undo() {
 		// Revert to a previous board
+		
+		//renders.remove(renderCurrent-1);// .setPlayer(playerCurrent);  
+		goBoard.setRender(renders.get(renderCurrent-1));// .setPlayer(playerCurrent);  
+		//renderCurrent--;
 
 		// If you disconnect the render from the board you will have to remove 
 		// old pieces and add the new pieces again
 
 		// Change some game variables if required
+    	//swapPlayers();
 	}
 
 // ************ CAPTURE FUNCTIONS  ************************************	
