@@ -23,7 +23,7 @@ class GoCustomControl extends Control {
 			// overridden method to handle a mouse event
 			@Override
 			public void handle(MouseEvent event) {
-				goGameLogic.placePieceTry(event.getX(), event.getY());
+				goGameLogic.placePieceTry(event.getX(), event.getY()); 
 				
 			}
 		});

@@ -35,11 +35,11 @@ import javafx.util.converter.NumberStringConverter;
 public class GoControlPanel extends Pane{
 
 	private GoGameLogic goGameLogic;
-	private TextField tf_score, tf_prisoners; 
-	private Label lbl_player1, lbl_player2, lbl_prisoners, lbl_score;
+	private TextField tf_score1, tf_score2, tf_prisoners; 
+	private Label lbl_player1, lbl_player2, lbl_prisoners, lbl_score1, lbl_score2;
 
 	private VBox vb; 
-	private HBox prisonBox, scoreBox, playerBox;
+	private HBox prisonBox, p1ScoreBox, p2ScoreBox, playerBox;
 	static Ellipse gp  = new Ellipse(); 
 	
 	public GoControlPanel(GoGameLogic goGameLogic) {
@@ -52,18 +52,23 @@ public class GoControlPanel extends Pane{
 		Button reset_button = new Button("Reset Game");
 		Button change_board_button = new Button("Change Board");
 		Button skip_button = new Button("Skip Turn");
-		Button menu_button = new Button("Menu");
+		Button menu_button = new Button("Rules");
 		
-		lbl_score = new Label("Territory:");
-		tf_score = new TextField();
-		tf_score.setEditable(false);
-		tf_score.setPrefWidth(50);
+		lbl_score1 = new Label("P1 Territory:");
+		tf_score1 = new TextField();
+		tf_score1.setEditable(false);
+		tf_score1.setPrefWidth(50);
 		
-		lbl_prisoners = new Label("Prisoners:");
-		tf_prisoners = new TextField();
-		tf_prisoners.setText("0");
-		tf_prisoners.setEditable(false);
-		tf_prisoners.setPrefWidth(50);
+		lbl_score2 = new Label("P2 Territory:");
+		tf_score2 = new TextField();
+		tf_score2.setEditable(false);
+		tf_score2.setPrefWidth(50);
+		
+		//lbl_prisoners = new Label("Prisoners:");
+		//tf_prisoners = new TextField();
+		//tf_prisoners.setText("0");
+		//tf_prisoners.setEditable(false);
+		//tf_prisoners.setPrefWidth(50);
 		
 //		GoPiece gp = new GoPiece(1);
 //		gp.setPiece(1);
@@ -107,7 +112,8 @@ public class GoControlPanel extends Pane{
 
 		// Binding the SimpleIntegerProperty scoreProperty in GoGameLogic to the TextField tf_score
 		this.lbl_player2.textProperty().bindBidirectional(this.goGameLogic.getCurrentPlayer(), new NumberStringConverter());
-		this.tf_score.textProperty().bindBidirectional(this.goGameLogic.getScore(), new NumberStringConverter());
+		this.tf_score1.textProperty().bindBidirectional(this.goGameLogic.getP1Score(), new NumberStringConverter());
+		this.tf_score2.textProperty().bindBidirectional(this.goGameLogic.getP2Score(), new NumberStringConverter());
 		//this.tf_prisoners.textProperty().bindBidirectional(this.goGameLogic.getPrisonersProperty(), new NumberStringConverter());
 		//gp.fillProperty().bind(this.goGameLogic.getEllipse());
 		//gp.styleProperty().bindBidirectional(this.goGameLogic.getStyle());
@@ -124,24 +130,29 @@ public class GoControlPanel extends Pane{
 		playerBox = new HBox();
 		playerBox.setAlignment(Pos.CENTER);
 		playerBox.setSpacing(5);
-		playerBox.getChildren().addAll(lbl_player1, lbl_player2);
+		playerBox.getChildren().addAll(lbl_player1, lbl_player2); 
 		
-		prisonBox = new HBox();
-		prisonBox.setAlignment(Pos.CENTER);
-		prisonBox.setSpacing(20);
-		prisonBox.getChildren().addAll(lbl_prisoners, tf_prisoners);
+//		prisonBox = new HBox();
+//		prisonBox.setAlignment(Pos.CENTER);
+//		prisonBox.setSpacing(20);
+//		prisonBox.getChildren().addAll(lbl_prisoners, tf_prisoners);
+//		
+		p1ScoreBox = new HBox();
+		p1ScoreBox.setAlignment(Pos.CENTER);
+		p1ScoreBox.setSpacing(20);
+		p1ScoreBox.getChildren().addAll(lbl_score1, tf_score1);
 		
-		scoreBox = new HBox();
-		scoreBox.setAlignment(Pos.CENTER);
-		scoreBox.setSpacing(20);
-		scoreBox.getChildren().addAll(lbl_score, tf_score);
+		p2ScoreBox = new HBox();
+		p2ScoreBox.setAlignment(Pos.CENTER);
+		p2ScoreBox.setSpacing(20);
+		p2ScoreBox.getChildren().addAll(lbl_score2, tf_score2);
 		
 		//int curr_player = GoGameLogic.get_player();
 		//changePlayerIcon(curr_player, gp);
 
 		
 		this.getChildren().add(vb);
-		vb.getChildren().addAll (new Label("Control Panel"),playerBox, gp, scoreBox, prisonBox, reset_button, 
+		vb.getChildren().addAll (new Label("Control Panel"),playerBox, gp, p1ScoreBox, p2ScoreBox, reset_button, 
 				skip_button,change_board_button, menu_button);
 		
 		//System.out.println("TEST PIECE" + gp);
@@ -150,9 +161,9 @@ public class GoControlPanel extends Pane{
 	
 	public static void stoneColour(int i) {
 		if(i == 1)
-			gp.setFill(Color.WHITE);
+			gp.setFill(Color.BLACK);
 		else
-			gp.setFill(Color.BLACK);	
+			gp.setFill(Color.WHITE);	
 	}
 	
 	

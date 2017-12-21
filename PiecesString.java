@@ -12,7 +12,7 @@ public class PiecesString{
 	}
 	
 	public void add(Piece piece){
-		System.out.println("Trying to add "+piece);
+		//System.out.println("Trying to add "+piece);
 		// if piece same player
 		if(piece.getPlayer()==this.player)
 			//if not in piecesString 
@@ -24,7 +24,7 @@ public class PiecesString{
 				// output the piecesString
 				System.out.println("add() - Pieces Group: "+this.piecesString);
 			}
-			else
+			else //{}
 				System.out.println(piece+" already added");
 		// else if empty  
 		else if(piece.getPlayer()==0){

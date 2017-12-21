@@ -90,10 +90,10 @@ class Piece extends Group {
 
 		// set the colour of the piece and if necessary make it visible
 		if(type == 1) {
-			piece.setFill(Color.WHITE);
+			piece.setFill(Color.BLACK);
 			piece.setVisible(true);
 		} else if (type == 2) {
-			piece.setFill(Color.BLACK);
+			piece.setFill(Color.WHITE);
 			piece.setVisible(true);
 		} else if (type == 0) {
 			piece.setVisible(false);
