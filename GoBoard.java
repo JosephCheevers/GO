@@ -206,6 +206,16 @@ public class GoBoard extends Pane{
 	    }
 	}
 	
+	public void setRender(Piece[][] newRender){
+		//render = newRender;
+		
+		for(int i=0; i< render.length; i++) {
+	        for(int j=0; j< render.length; j++) {
+	        	render[i][j].setPlayer(newRender[i][j].getPlayer());
+	        }
+		}
+	}
+	
 	// private method for resizing and relocating all the pieces
 	private void pieceResizeRelocate() {
 		for(int i=0; i<render.length; i++) {

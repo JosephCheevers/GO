@@ -19,6 +19,8 @@ public class GoGameLogic {
 	private boolean in_play;  // is the game currently in play
 	private int scorePlayer1; // score of player1
 	private int scorePlayer2; // score of player2
+	private int prisonersPlayer1;
+	private int prisonersPlayer2;
 	private int passesPlayer1;// passes by player1
 	private int passesPlayer2;// passes by player2
 
@@ -84,10 +86,11 @@ public class GoGameLogic {
 		canMove(); 
 		
 		GoControlPanel.stoneColour(playerCurrent);
+		this.currentPlayerProperty.setValue(playerCurrent);
 		
 		//call can move to display the viable moves in grey on reset
 
-
+		renderCurrent = 0;
 		// reset renders (board history) 
 		this.renders = new ArrayList<Piece [][]>();
 		// save the board in renders
@@ -132,6 +135,9 @@ public class GoGameLogic {
 			// you might want to prevent the move or make the move and rewind the board history
 			return;
 		}
+		
+		// Default case - place the piece
+		this.placePiece(cellx, celly);
 
 		// Test to see if placing a piece here results in its group having no liberty
 		if(isSuicide(cellx, celly)){
@@ -144,8 +150,8 @@ public class GoGameLogic {
 		System.out.println("P1 score: " + scorePlayer1);
 		System.out.println("P2 score: " + scorePlayer2);
 
-		// Default case - place the piece
-		this.placePiece(cellx, celly);
+//		// Default case - place the piece
+//		this.placePiece(cellx, celly);
 		
 		// increment score if stone placed
 		if(playerCurrent == 1) scorePlayer1++;
@@ -199,43 +205,128 @@ public class GoGameLogic {
 
 // ************ KO FUNCTIONS  ************************************	
 
+//	// Method which returns true if current board is equal to the board 
+//	// the last time it was this players turn 
+//	private boolean isKO() {
+//		// If there are enough boards in the history
+//
+//		// Printout the current board
+//
+//		// Printout the old board 
+//
+//		// Compare the old board to the new board and return true if they match
+//
+//		// If the move is not allowed make sure to undo the move 
+//
+//		return false; 
+//	}
+	
 	// Method which returns true if current board is equal to the board 
-	// the last time it was this players turn 
-	private boolean isKO() {
-		// If there are enough boards in the history
+		// the last time it was this players turn 
+		private boolean isKO() {
+			// If there are enough boards in the history
+			if(renders.size() > 2) {
+				// Printout the current board
+				System.out.print("Current Board:  ");
+				
+				int arrSize = goBoard.getRender().length;
+				for(int i=0; i< arrSize ; i++) {
+			        for(int j=0; j< arrSize; j++) {
+		        		System.out.print(goBoard.getRender()[i][j].getPlayer());
+		    			System.out.print(" , ");
+			        }
+				}
+				System.out.println();
+				System.out.println("** " + renders.size());
+			
+				// Printout the old board 
+				System.out.print("Previous Board: ");
+				for(int i=0; i< arrSize; i++) {
+			        for(int j=0; j< arrSize; j++) {
+		        		System.out.print(renders.get(renderCurrent-1)[i][j].getPlayer());
+		    			System.out.print(" , ");
+			        }
+				}
+				System.out.println();
 
-		// Printout the current board
+				// Compare the old board to the new board and return true if they match			
+				for(int i=0; i< goBoard.getRender().length; i++) {
+			        for(int j=0; j< goBoard.getRender()[i].length; j++) {
+			        	if(goBoard.getRender()[i][j].getPlayer() != renders.get(renderCurrent-2)[i][j].getPlayer()){
+			        		// If the move is not allowed make sure to undo t he move
+			        		System.out.print("[");
+			        		System.out.print(renders.get(renderCurrent-2)[i][j].getPlayer());
+			        		System.out.print(" , ");
+			        		System.out.print(goBoard.getRender()[i][j].getPlayer());
+			        		System.out.println("]");		        		
+			        		return false;
+						}
+		        	}
+		        }	 
+	    		System.out.println("*");
+	    		System.out.println("*");
+	    		System.out.println("*");
+	    		undo();
+				return true;
+			}
+			return false; 
+		}
 
-		// Printout the old board 
+		// Saves a copy of the board in board history 
+		private void boardSave(){
 
-		// Compare the old board to the new board and return true if they match
+			Piece[][] render = goBoard.getRender();// something missing on this line
+			Piece[][] copy = new Piece[7][7];
+				
+			for(int i=0; i< render.length; i++) {
+		        for(int j=0; j< render.length; j++) {
+					copy[i][j] = new Piece(render[i][j].getPlayer(),render[i][j].getX(),render[i][j].getY()); 
+		        }
+			}
 
-		// If the move is not allowed make sure to undo the move 
+			
+			// add the copy to the board history, 
+			renders.add(copy);
+			renderCurrent++;
+			// you have the current board in the board history if you want but 
+			// make sure you know what index it is in
+			
+		}
 
-		return false; 
-	}
+		// Reverts to previous board
+		public void undo() {
+			// Revert to a previous board
+			goBoard.setRender(renders.get(renderCurrent-1));// .setPlayer(playerCurrent);  
+			//renderCurrent--;
 
-	// Saves a copy of the board in board history 
-	private void boardSave(){
+			// If you disconnect the render from the board you will have to remove 
+			// old pieces and add the new pieces again
 
-		Piece[][] render; // something missing on this line
-		Piece[][] copy = new Piece[7][7];
-		//make a deep copy of the render array using a for loop
+			// Change some game variables if required
+	    	//swapPlayers();
+		}
 
-		// add the copy to the board history, 
-		// you have have the current board in the board history if you want but 
-		// make sure you know what index it is in.
-	}
-
-	// Reverts to previous board
-	public void undo() {
-		// Revert to a previous board
-
-		// If you disconnect the render from the board you will have to remove 
-		// old pieces and add the new pieces again
-
-		// Change some game variables if required
-	}
+//	// Saves a copy of the board in board history 
+//	private void boardSave(){
+//
+//		Piece[][] render; // something missing on this line
+//		Piece[][] copy = new Piece[7][7];
+//		//make a deep copy of the render array using a for loop
+//
+//		// add the copy to the board history, 
+//		// you have have the current board in the board history if you want but 
+//		// make sure you know what index it is in.
+//	}
+//
+//	// Reverts to previous board
+//	public void undo() {
+//		// Revert to a previous board
+//
+//		// If you disconnect the render from the board you will have to remove 
+//		// old pieces and add the new pieces again
+//
+//		// Change some game variables if required
+//	}
 
 // ************ CAPTURE FUNCTIONS  ************************************	
 
@@ -391,34 +482,9 @@ public class GoGameLogic {
 		
 		System.out.println("Capture String : " + capturePieces);
 		
-		boolean hasLiberty = false;
+		boolean hasLiberty = capturePieces.getHasLiberty();
 		captured = false;
 		
-		for(int i = 0; i < capturePieces.size(); i++) {
-			Piece currentPiece = capturePieces.get(i);
-			//System.out.println("test2" + goBoard.getRender()[x][y]);
-			int tempx = currentPiece.getX();
-			int tempy = currentPiece.getY();
-			
-			//UP
-			if (goBoard.getPiecePlayer(tempx, tempy-1) == 0) {
-				hasLiberty = true;
-			}
-			// RIGHT
-			if (goBoard.getPiecePlayer(tempx+1, tempy) == 0) {
-				hasLiberty = true;
-			}
-			
-			// DOWN
-			if (goBoard.getPiecePlayer(tempx, tempy+1) == 0) {
-				hasLiberty = true;
-			}
-			
-			//LEFT
-			if (goBoard.getPiecePlayer(tempx-1, tempy) == 0) {
-				hasLiberty = true;
-			}
-		}
 			//if no liberty, reset pieces 
 			if (!hasLiberty) {
 				captured = true;
@@ -741,10 +807,11 @@ public class GoGameLogic {
 		
 		if(passesPlayer2 > 0 && passesPlayer1 >0) {
 			in_play = false;
+			determineWinner();
 			System.out.println("GAME OVER BITCH");
 		}
 		
-		determineWinner();
+
 	}
 
 	// Private method to determine if a player has a moves available 
@@ -759,14 +826,29 @@ public class GoGameLogic {
 
 	// private method that determines who won the game
 	private void determineWinner() {
-		// what is the prisoner score
+		String winner = "Game is a tie";
+		
+		//total score = pieces on board - pieces captured + opponent pieces captured
+		// already all in the player's scores
 
-		// what is the territory score (advanced) 
-
+		// what is the territory score (advanced)  //no, too advanced :(
+		
+		
+		if(scorePlayer1 > scorePlayer2) {
+			winner = "Black";
+		}
+		
+		else if(scorePlayer1 > scorePlayer2) {
+			winner = "White";
+		}
+		else winner = "Nobody";
+		
 		// update the variables
+		in_play = false;
 
 		// show who the winner is
+		GoControlPanel.popUpWinner(winner);
+			
 	}
-
-
+	
 }

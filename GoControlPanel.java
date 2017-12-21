@@ -25,6 +25,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Ellipse;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -35,16 +37,20 @@ import javafx.util.converter.NumberStringConverter;
 public class GoControlPanel extends Pane{
 
 	private GoGameLogic goGameLogic;
-	private TextField tf_score1, tf_score2, tf_prisoners; 
-	private Label lbl_player1, lbl_player2, lbl_prisoners, lbl_score1, lbl_score2;
+	private TextField tf_score1, tf_score2, tf_territories; 
+	private Label lbl_title, lbl_player1, lbl_player2, lbl_territories, lbl_score1, lbl_score2;
 
 	private VBox vb; 
-	private HBox prisonBox, p1ScoreBox, p2ScoreBox, playerBox;
+	private HBox territoriesBox, p1ScoreBox, p2ScoreBox, playerBox;
 	static Ellipse gp  = new Ellipse(); 
 	
 	public GoControlPanel(GoGameLogic goGameLogic) {
 		super();
 		this.goGameLogic = goGameLogic;
+		
+		lbl_title = new Label("Control Panel");
+		lbl_title.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+		
 	
 		lbl_player1 = new Label("Turn:     Player ");
 		lbl_player2 = new Label();
@@ -54,21 +60,21 @@ public class GoControlPanel extends Pane{
 		Button skip_button = new Button("Skip Turn");
 		Button menu_button = new Button("Rules");
 		
-		lbl_score1 = new Label("P1 Territory:");
+		lbl_score1 = new Label("P1 Score:");
 		tf_score1 = new TextField();
 		tf_score1.setEditable(false);
 		tf_score1.setPrefWidth(50);
 		
-		lbl_score2 = new Label("P2 Territory:");
+		lbl_score2 = new Label("P2 Score:");
 		tf_score2 = new TextField();
 		tf_score2.setEditable(false);
 		tf_score2.setPrefWidth(50);
 		
-		//lbl_prisoners = new Label("Prisoners:");
-		//tf_prisoners = new TextField();
-		//tf_prisoners.setText("0");
-		//tf_prisoners.setEditable(false);
-		//tf_prisoners.setPrefWidth(50);
+		lbl_territories = new Label("Territories:");
+		tf_territories = new TextField();
+		tf_territories.setText("0");
+		tf_territories.setEditable(false);
+		tf_territories.setPrefWidth(50);
 		
 //		GoPiece gp = new GoPiece(1);
 //		gp.setPiece(1);
@@ -114,7 +120,7 @@ public class GoControlPanel extends Pane{
 		this.lbl_player2.textProperty().bindBidirectional(this.goGameLogic.getCurrentPlayer(), new NumberStringConverter());
 		this.tf_score1.textProperty().bindBidirectional(this.goGameLogic.getP1Score(), new NumberStringConverter());
 		this.tf_score2.textProperty().bindBidirectional(this.goGameLogic.getP2Score(), new NumberStringConverter());
-		//this.tf_prisoners.textProperty().bindBidirectional(this.goGameLogic.getPrisonersProperty(), new NumberStringConverter());
+		//this.tf_territories.textProperty().bindBidirectional(this.goGameLogic.getPrisonersProperty(), new NumberStringConverter());
 		//gp.fillProperty().bind(this.goGameLogic.getEllipse());
 		//gp.styleProperty().bindBidirectional(this.goGameLogic.getStyle());
 		
@@ -132,11 +138,11 @@ public class GoControlPanel extends Pane{
 		playerBox.setSpacing(5);
 		playerBox.getChildren().addAll(lbl_player1, lbl_player2); 
 		
-//		prisonBox = new HBox();
-//		prisonBox.setAlignment(Pos.CENTER);
-//		prisonBox.setSpacing(20);
-//		prisonBox.getChildren().addAll(lbl_prisoners, tf_prisoners);
-//		
+		territoriesBox = new HBox();
+		territoriesBox.setAlignment(Pos.CENTER);
+		territoriesBox.setSpacing(20);
+		territoriesBox.getChildren().addAll(lbl_territories, tf_territories);
+		
 		p1ScoreBox = new HBox();
 		p1ScoreBox.setAlignment(Pos.CENTER);
 		p1ScoreBox.setSpacing(20);
@@ -152,7 +158,7 @@ public class GoControlPanel extends Pane{
 
 		
 		this.getChildren().add(vb);
-		vb.getChildren().addAll (new Label("Control Panel"),playerBox, gp, p1ScoreBox, p2ScoreBox, reset_button, 
+		vb.getChildren().addAll (lbl_title,playerBox, gp, p1ScoreBox, p2ScoreBox, territoriesBox, reset_button, 
 				skip_button,change_board_button, menu_button);
 		
 		//System.out.println("TEST PIECE" + gp);
@@ -167,54 +173,16 @@ public class GoControlPanel extends Pane{
 	}
 	
 	
-	public void popUpPause() {
-		 //root.setEffect(new GaussianBlur());
 	
-		 Pane pauseRoot = new Pane ();
-	     pauseRoot.getChildren().add(new Label("Paused"));
-	     pauseRoot.setStyle("-fx-background-color: rgba(255, 255, 255, 0.8);");
-	     //pauseRoot.setAlignment(Pos.CENTER);
-	     pauseRoot.setPadding(new Insets(20));
-	
-	     //======================== Menu ==============================
-	     pauseRoot.setPrefSize(300, 300);
-	     
-	     //ContentFrame frame1 = new ContentFrame(createContent(-25, "Player 1 Info"));
-	    // ContentFrame frame2 = new ContentFrame(createContent(-25, "Whois Turn"));
-	    // ContentFrame frame3 = new ContentFrame(createContent(-25, "Player 2 Info"));
-	     //HBox hbox = new HBox(15, frame1, frame2, frame3);
-	     
-	     //hbox.setTranslateX(120);
-	     //hbox.setTranslateY(50);
-	
-	
-	        
-	     //======================================================   
-	     
-	     Button resume = new Button("Resume");
-	     //pauseRoot.getChildren().add(resume);
-	
-	     Stage popupStage = new Stage(StageStyle.TRANSPARENT);
-	     //initOwner(primaryStage);
-	     popupStage.initModality(Modality.APPLICATION_MODAL);
-	     popupStage.setScene(new Scene(pauseRoot, Color.TRANSPARENT));
-	     
-	     pauseRoot.getChildren().addAll(resume);
-	     resume.setOnAction(event -> {
-	         //root.setEffect(null);
-	         popupStage.hide();
-	     });
-	     popupStage.show();
-  }
   
  private void popUpDialog(){
 	   Alert rules = new Alert(AlertType.INFORMATION);
 	   rules.setTitle("GO MENU");
 	   rules.setHeaderText("The Rules of GO");
 	   rules.setContentText("A game of Go starts with an empty board. This is a smaller 7x7 version. \n\n" + 
-			   "Each player has an unlimited supply of pieces (called stones), one taking the black stones, " + 
-			   "the other taking white. The main object of the game is to use your stones to " + 
-	   			"form territories by surrounding vacant areas of the board. It is also possible to capture your opponent's" + 
+			   "Each player has an unlimited supply of stones, one takes the black stones, " + 
+			   "the other takes the white. The main object of the game is to use your stones to " + 
+	   			"form territories by surrounding vacant areas of the board. It is also possible to capture your opponent's " + 
 	   			"stones by completely surrounding them. \n \n" +
 	   			"- The empty points which are horizontally and vertically adjacent to a stone, or a solidly connected string"
 	   			+ " of stones, are known as liberties. An isolated stone or solidly connected string of stones is captured "
@@ -223,9 +191,12 @@ public class GoControlPanel extends Pane{
 	   			+ "Several strings close together that belong to the same player are called a group. A string of stones is treated"
 	   			+ " as a single unit and is captured when all of its liberties are occupied by enemy stones.\n\n"
 	   			+ "- Suicide Rule: A player may not suicide (play a stone into a position where it would have no liberties) unless"
-	   			+ " as a result, one or more of the stones surrounding it is captured."
+	   			+ " as a result, one or more of the stones surrounding it is captured. \n\n"
 	   			+ " - KO Rule: A play is illegal if it would have the effect (after all steps of the play have been completed)"
 	   			+ " of creating a position that has occurred previously in the game. \n \n"
+	   			+ "Two Consecutive Skips ends the game. To end game press 'Skip Turn' twice. \n \n"
+	   			+ "Scores: the amount of stones on the board, minus stones captured by opponent, plus opponent stones captured. "
+	   			+ "The player with the highest score wins!  \n\n"
 	   			+ "For more info visit: https://www.britgo.org \n \n"
 	   			+ "Game created by Jen & Joe"
 	   		
@@ -236,18 +207,16 @@ public class GoControlPanel extends Pane{
 	   rules.show();
   }
  
- 	private void changePlayerIcon(int p, Ellipse gp) {
-		if (p == 1) {
-			gp.setFill(Color.WHITE); //visible - Player1
-		}
-		else if(p == 2) {
-			gp.setFill(Color.BLACK); //visible - Player2
-		}
-		else if(p == 0) {
-			gp.setFill(Color.TRANSPARENT); //invisible
-		}	
-		else if(p == 3) {
-			gp.setFill(Color.web("#555555", 0.2)); //set color of empty piece that is viable move to grey
-		}
- }
+	 public static void popUpWinner(String player){
+		   Alert rules = new Alert(AlertType.INFORMATION);
+		   rules.setTitle("Complete");
+		   rules.setHeaderText("Match Finished");
+		   rules.setContentText(player + " Wins!");
+	
+		   rules.initModality(Modality.NONE);
+		   rules.initStyle(StageStyle.UTILITY);
+		   rules.show();
+	}
+ 
+ 	
 }
